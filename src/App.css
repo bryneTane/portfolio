@@ -36,3 +36,41 @@
     transform: rotate(360deg);
   }
 }
+
+.ft-black {
+  color: #282525;
+}
+
+.ft-orange {
+  color: #f68b48;
+}
+
+.ft-bg-black {
+  background-color: #282525;
+}
+
+.ft-bg-orange {
+  background-color: #f68b48;
+}
+
+.link:hover {
+  color: #f68b48;
+}
+
+.parallax {
+  min-height: 500px;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.line {
+  height: 1px;
+  background-color: #f68b48;
+}
+
+.vline {
+  width: 1px;
+  background-color: #f68b48;
+}
