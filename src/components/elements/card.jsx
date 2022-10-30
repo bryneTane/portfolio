@@ -17,7 +17,7 @@ export default function Card({
   return (
     <>
       <div
-        className={`pointer relative shadow-1 br3 pa4 mh3 mv2`}
+        className={`pointer relative shadow-1 br3 pa4 mh3-l mh1 mv2`}
         style={{
           width,
           height,

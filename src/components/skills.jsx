@@ -4,13 +4,10 @@ import Title from "./elements/title";
 
 export default function Skills() {
   return (
-    <div id="skills" className="mv6 ph5">
-      <Title text={"skills"} minWidth={250} />
-      <div
-        className="ph4 flex items-center justify-center"
-        style={{ height: 350 }}
-      >
-        <div className="w-30 h-100">
+    <div id="skills" className="mv6-l mv5 ph5-l ph3">
+      <Title text={"skills"} />
+      <div className="ph4-l flex flex-row-l flex-column items-center justify-center">
+        <div className="w-30-l h-100">
           <div className="f3">Languages</div>
           <SkillList
             skills={[
@@ -26,8 +23,8 @@ export default function Skills() {
             ]}
           />
         </div>
-        <div className="vline mh2 h-100" />
-        <div className="w-30 h-100">
+        <div className="vline mh2 h-100 dn dib-l" />
+        <div className="w-30-l h-100">
           <div className="f3">Frameworks</div>
           <SkillList
             skills={[
@@ -48,8 +45,8 @@ export default function Skills() {
             ]}
           />
         </div>
-        <div className="vline mh2 h-100" />
-        <div className="w-30 h-100">
+        <div className="vline mh2 h-100 dn dib-l" />
+        <div className="w-30-l h-100">
           <div className="f3">Tools</div>
           <SkillList
             skills={[

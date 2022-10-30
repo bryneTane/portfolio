@@ -9,7 +9,7 @@ const projects = [
     imageUrl: "lamater.png",
     logoUrl: "/lamater-logo-white.png",
     Content: () => (
-      <div className="f5 tl w-70 mv3">
+      <div className="f5 tl w-70-l mv3">
         <div className="f3 mv2 ft-orange">
           La Mater Service - Remote (Cameroon) | Jan 2019 - Today
         </div>
@@ -39,7 +39,7 @@ const projects = [
     imageUrl: "hostme.png",
     logoUrl: "/hostme-logo.png",
     Content: () => (
-      <div className="f5 tl w-70 mv3">
+      <div className="f5 tl w-70-l mv3">
         <div className="f3 mv2 ft-orange">
           La Mater Service - Remote (Cameroon) | Jan 2019 - Today
         </div>
@@ -76,7 +76,7 @@ const projects = [
     imageUrl: "kulturbot.png",
     logoUrl: "/kulturbot-logo.png",
     Content: () => (
-      <div className="f5 tl w-70 mv3">
+      <div className="f5 tl w-70-l mv3">
         <div className="f3 mv2 ft-orange">
           Paris, France | Sept 2022 - Today
         </div>
@@ -115,7 +115,7 @@ const projects = [
     imageUrl: "joke.png",
     logoUrl: "/joke-logo.png",
     Content: () => (
-      <div className="f5 tl w-70 mv3">
+      <div className="f5 tl w-70-l mv3">
         <div className="f3 mv2 ft-orange">
           Élancourt, France | Mars 2020 - Avril 2020
         </div>
@@ -151,7 +151,7 @@ const projects = [
     imageUrl: "reach.png",
     logoUrl: "/reach-logo.png",
     Content: () => (
-      <div className="f5 tl w-70 mv3">
+      <div className="f5 tl w-70-l mv3">
         <div className="f3 mv2 ft-orange">
           ESIGELEC / Airbus Defense And Space - Rouen, France | Dec 2019 - Jan
           2020
@@ -202,12 +202,12 @@ const projects = [
 
 export default function Projects() {
   return (
-    <div id="projects" className="mv6 ph5">
-      <Title text={"side projects"} minWidth={430} />
-      <div className="ph4">
+    <div id="projects" className="mv6-l mv5 ph5-l ph3">
+      <Title text={"side projects"} />
+      <div className="ph4-l">
         {projects.map((project) => (
           <div className="dib">
-            <Card key={project.title} width={400} height={400} {...project} />
+            <Card key={project.title} width={300} height={300} {...project} />
           </div>
         ))}
       </div>

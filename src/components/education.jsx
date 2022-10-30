@@ -3,11 +3,11 @@ import Title from "./elements/title";
 
 export default function Education() {
   return (
-    <div id="education" className="mv6 ph5">
-      <Title text={"education"} minWidth={350} />
-      <div className="ph4">
+    <div id="education" className="mv6-l mv5 ph5-l ph3">
+      <Title text={"education"} />
+      <div className="ph4-l">
         <div className="flex mv4">
-          <div className="flex flex-column items-center w-30">
+          <div className="flex-l dn flex-column items-center w-30">
             <img
               src="/esigelec-logo.png"
               style={{ width: 180 }}
@@ -15,7 +15,13 @@ export default function Education() {
             />
             <div className="vline h-100 mt3" />
           </div>
-          <div className="f4 tl w-70">
+          <div className="f4 tl-l w-70-l w-100">
+            <img
+              src="/esigelec-logo.png"
+              style={{ width: 180 }}
+              alt="esigelec"
+              className="dn-l mb3"
+            />
             <div className="f2">Software Engineering Degree</div>
             <div className="f3 mv2 ft-orange">
               ESIGELEC - Rouen, France | Sept 2017 - Sept 2020
@@ -46,7 +52,7 @@ export default function Education() {
           </div>
         </div>
         <div className="flex mv4">
-          <div className="flex flex-column items-center w-30">
+          <div className="flex-l dn flex-column items-center w-30">
             <img
               src="/prepavogt-logo.png"
               style={{ width: 60 }}
@@ -54,7 +60,13 @@ export default function Education() {
             />
             <div className="vline h-100 mt3" />
           </div>
-          <div className="f4 tl w-70">
+          <div className="f4 tl-l w-70-l w-100">
+            <img
+              src="/prepavogt-logo.png"
+              style={{ width: 60 }}
+              alt="prepavogt"
+              className="dn-l"
+            />
             <div className="f2">
               Classes Préparatoires aux Grandes Écoles, MPSI
             </div>

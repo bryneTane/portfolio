@@ -8,7 +8,7 @@ const Modal = ({ isVisible, hide, title, ...props }) =>
         <>
           <div className="modal-overlay">
             <div className="modal-wrapper">
-              <div className="modal pa4">
+              <div className="modal pa4 w-50-l w-90">
                 <div className="modal-header">
                   <div className="f2">{title}</div>
                   <button

@@ -4,11 +4,11 @@ import Title from "./elements/title";
 
 export default function Experience() {
   return (
-    <div id="experience" className="mv6 ph5">
-      <Title text={"work experience"} minWidth={520} />
-      <div className="ph4">
+    <div id="experience" className="mv6-l mv5 ph5-l ph3">
+      <Title text={"work experience"} />
+      <div className="ph4-l">
         <div className="flex mv4">
-          <div className="flex flex-column items-center w-30">
+          <div className="flex-l dn flex-column items-center w-30">
             <img
               src="/teamstarter-logo.png"
               style={{ width: 90 }}
@@ -16,7 +16,13 @@ export default function Experience() {
             />
             <div className="vline h-100 mt3" />
           </div>
-          <div className="f4 tl w-70">
+          <div className="f4 tl-l w-70-l w-100">
+            <img
+              src="/teamstarter-logo.png"
+              style={{ width: 90 }}
+              alt="teamstarter"
+              className="dn-l"
+            />
             <div className="f2">Software Engineer</div>
             <div className="f3 mv2 ft-orange">
               Teamstarter - Paris, France | Oct 2020 - Today
@@ -62,11 +68,17 @@ export default function Experience() {
           </div>
         </div>
         <div className="flex mv4">
-          <div className="flex flex-column items-center w-30">
+          <div className="flex-l dn flex-column items-center w-30">
             <img src="/nokia-logo.png" style={{ width: 150 }} alt="nokia" />
             <div className="vline h-100" />
           </div>
-          <div className="f4 tl w-70">
+          <div className="f4 tl-l w-70-l w-100">
+            <img
+              src="/nokia-logo.png"
+              style={{ width: 150 }}
+              alt="nokia"
+              className="dn-l"
+            />
             <div className="f2">Junior Software Engineer</div>
             <div className="f3 mv2 ft-orange">
               Nokia - Nozay, France | Sept 2018 - Sept 2020

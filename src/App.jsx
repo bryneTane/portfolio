@@ -16,7 +16,7 @@ function App() {
       <Skills />
       <Projects />
       <div
-        className="shadow-1 flex items-center justify-start pl7"
+        className="shadow-1 flex items-center justify-start pl7-l pl2"
         style={{ height: 80 }}
       >
         © 2022 Friedrich Tane

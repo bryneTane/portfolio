@@ -3,7 +3,7 @@ import React from "react";
 export default function Header() {
   return (
     <div
-      className="flex items-center justify-between ft-bg-black ph5 shadow-1 fixed top-0 w-100 z-2"
+      className="flex items-center justify-between-l justify-center ft-bg-black ph5 shadow-1 fixed top-0 w-100 z-2"
       style={{
         height: 80,
       }}
@@ -14,13 +14,21 @@ export default function Header() {
         className="pointer"
         alt={"Logo"}
       />
-      <div className="flex items-center f4 white bold">
-        <div className="mh4 pointer link">Experience</div>
-        <div className="mh4 pointer link">Education</div>
-        <div className="mh4 pointer link">Skills</div>
-        <div className="mh4 pointer link">Projects</div>
-        <div className="mh4 pointer link">Languages</div>
-        <div className="mh4 pointer link">Interests</div>
+      <div className="flex-l items-center f4 white bold dn">
+        <a href="#experience" className="mh4 pointer link white">
+          Experience
+        </a>
+        <a href="#education" className="mh4 pointer link white">
+          Education
+        </a>
+        <a href="#skills" className="mh4 pointer link white">
+          Skills
+        </a>
+        <a href="#projects" className="mh4 pointer link white">
+          Projects
+        </a>
+        {/* <a href='#languages' className="mh4 pointer link">Languages</a> */}
+        {/* <a href='#interests' className="mh4 pointer link">Interests</a> */}
       </div>
     </div>
   );
