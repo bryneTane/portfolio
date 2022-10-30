@@ -3,14 +3,14 @@ import React from "react";
 export default function Start() {
   return (
     <div
-      className="pv6 flex items-center relative justify-between ph7 parallax"
+      className="pv6 flex items-center relative justify-center ph4 parallax"
       id="start"
       style={{ background: 'url("/computer.jpg")', marginTop: 80 }}
     >
       <div className="h-100 w-100 o-90 ft-bg-black absolute top-0 left-0 z-0" />
       <div
-        className="relative overflow-hidden z1 w-100 fg1"
-        style={{ minWidth: 300, height: 300, borderRadius: "50%" }}
+        className="relative overflow-hidden z-1 w-40"
+        style={{ width: 300, height: 300, borderRadius: "50%" }}
       >
         <img
           src="./ft.jpg"
@@ -19,7 +19,7 @@ export default function Start() {
           style={{ marginTop: -50 }}
         />
       </div>
-      <div className="f4 tl ml5 z-1">
+      <div className="f4 tl ml5 z-1 w-60">
         <div className="mb2" style={{ fontSize: 80 }}>
           Hi, I'm Friedrich 😁👋
         </div>

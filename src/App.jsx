@@ -1,6 +1,9 @@
 import "./App.css";
+import Education from "./components/education";
 import Experience from "./components/experience";
 import Header from "./components/header";
+import Projects from "./components/projects";
+import Skills from "./components/skills";
 import Start from "./components/start";
 
 function App() {
@@ -9,6 +12,9 @@ function App() {
       <Header />
       <Start />
       <Experience />
+      <Education />
+      <Skills />
+      <Projects />
       <div
         className="shadow-1 flex items-center justify-start pl7"
         style={{ height: 80 }}

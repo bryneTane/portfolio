@@ -3,7 +3,7 @@ import React from "react";
 export default function Header() {
   return (
     <div
-      className="flex items-center justify-between ft-bg-black ph5 shadow-1 fixed top-0 w-100 z-max"
+      className="flex items-center justify-between ft-bg-black ph5 shadow-1 fixed top-0 w-100 z-2"
       style={{
         height: 80,
       }}

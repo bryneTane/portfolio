@@ -5,8 +5,8 @@ import Title from "./elements/title";
 export default function Experience() {
   return (
     <div id="experience" className="mv6 ph5">
-      <Title text={"work experience"} minWidth={550} />
-      <div className="ph7">
+      <Title text={"work experience"} minWidth={520} />
+      <div className="ph4">
         <div className="flex mv4">
           <div className="flex flex-column items-center w-30">
             <img
