@@ -16,7 +16,7 @@ export default function Experience() {
             />
             <div className="vline h-100 mt3" />
           </div>
-          <div className="f4 tl-l w-70-l w-100">
+          <div className="f4 tl w-70-l w-100">
             <img
               src="/teamstarter-logo.png"
               style={{ width: 90 }}
@@ -48,7 +48,7 @@ export default function Experience() {
               <div className="mv1">
                 Agile team (<span className="ft-orange">SCRUM</span>)
               </div>
-              <div className="mv1">
+              <div className="mv1 f4-l f5">
                 <SkillList
                   skills={[
                     "TypeScript",
@@ -72,7 +72,7 @@ export default function Experience() {
             <img src="/nokia-logo.png" style={{ width: 150 }} alt="nokia" />
             <div className="vline h-100" />
           </div>
-          <div className="f4 tl-l w-70-l w-100">
+          <div className="f4 tl w-70-l w-100">
             <img
               src="/nokia-logo.png"
               style={{ width: 150 }}
@@ -96,7 +96,7 @@ export default function Experience() {
               <div className="mv1">
                 International experience (Nokia Stuttgart, Germany)
               </div>
-              <div className="mv1">
+              <div className="mv1 f4-l f5">
                 <SkillList
                   skills={[
                     "JavaScript",

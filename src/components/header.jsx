@@ -27,8 +27,12 @@ export default function Header() {
         <a href="#projects" className="mh4 pointer link white">
           Projects
         </a>
-        {/* <a href='#languages' className="mh4 pointer link">Languages</a> */}
-        {/* <a href='#interests' className="mh4 pointer link">Interests</a> */}
+        <a href="#languages" className="mh4 pointer link white">
+          Languages
+        </a>
+        <a href="#interests" className="mh4 pointer link white">
+          Interests
+        </a>
       </div>
     </div>
   );

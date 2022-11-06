@@ -6,7 +6,7 @@ export default function Skills() {
   return (
     <div id="skills" className="mv6-l mv5 ph5-l ph3">
       <Title text={"skills"} />
-      <div className="ph4-l flex flex-row-l flex-column items-center justify-center">
+      <div className="ph4-l flex flex-row-l flex-column justify-center tl tc-l">
         <div className="w-30-l h-100">
           <div className="f3">Languages</div>
           <SkillList

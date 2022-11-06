@@ -5,7 +5,7 @@ import Title from "./elements/title";
 
 const projects = [
   {
-    title: "La Mater Market",
+    title: "La Mater",
     imageUrl: "lamater.png",
     logoUrl: "/lamater-logo-white.png",
     Content: () => (

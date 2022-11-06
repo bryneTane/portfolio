@@ -15,7 +15,7 @@ export default function Education() {
             />
             <div className="vline h-100 mt3" />
           </div>
-          <div className="f4 tl-l w-70-l w-100">
+          <div className="f4 tl w-70-l w-100">
             <img
               src="/esigelec-logo.png"
               style={{ width: 180 }}
@@ -60,7 +60,7 @@ export default function Education() {
             />
             <div className="vline h-100 mt3" />
           </div>
-          <div className="f4 tl-l w-70-l w-100">
+          <div className="f4 tl w-70-l w-100">
             <img
               src="/prepavogt-logo.png"
               style={{ width: 60 }}
