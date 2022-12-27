@@ -27,7 +27,49 @@ export default function Start() {
           I am a Fullstack Software Engineer based in Paris and currently
           working at Teamstarter (teamstarter.co).
         </div>
-        <div></div>
+        <div className="mt2 flex">
+          <a
+            href="mailto:friedrich.tane@gmail.com"
+            className="bg-white br2 flex items-center justify-center shadow-1 pointer grow"
+            style={{ width: 40, height: 40 }}
+          >
+            <img className="w-90" src="./email-logo.png" alt="email" />
+          </a>
+          <a
+            href="tel:+33612825998"
+            className="bg-white br2 ml2 flex items-center justify-center shadow-1 pointer grow"
+            style={{ width: 40, height: 40 }}
+          >
+            <img className="w-90" src="./phone-logo.png" alt="phone" />
+          </a>
+          <a
+            href="https://www.linkedin.com/in/bryne-tane"
+            target="_blank"
+            className="bg-white br2 ml2 flex items-center justify-center shadow-1 pointer grow"
+            style={{ width: 40, height: 40 }}
+            rel="noreferrer"
+          >
+            <img className="w-90" src="./linkedin-logo.png" alt="linkedin" />
+          </a>
+          <a
+            href="https://github.com/bryneTane"
+            target="_blank"
+            className="bg-white br2 ml2 flex items-center justify-center shadow-1 pointer grow"
+            style={{ width: 40, height: 40 }}
+            rel="noreferrer"
+          >
+            <img className="w-90" src="./github-logo.png" alt="github" />
+          </a>
+          {/* <a
+            href="https://gitlab.com/FriedrichB"
+            target="_blank"
+            className="bg-white br2 ml2 flex items-center justify-center shadow-1 pointer grow"
+            style={{ width: 40, height: 40 }}
+            rel="noreferrer"
+          >
+            <img className="w-90" src="./gitlab-logo.png" alt="gitlab" />
+          </a> */}
+        </div>
       </div>
     </div>
   );
