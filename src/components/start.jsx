@@ -27,7 +27,7 @@ export default function Start() {
           I am a Fullstack Software Engineer based in Paris and currently
           working at Teamstarter (teamstarter.co).
         </div>
-        <div className="mt2 flex">
+        <div className="mt2 flex w-100 justify-start-l justify-center">
           <a
             href="mailto:friedrich.tane@gmail.com"
             className="bg-white br2 flex items-center justify-center shadow-1 pointer grow"
