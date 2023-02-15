@@ -10,9 +10,7 @@ export default function Interests() {
         <SkillList
           skills={[
             "Piano practicing",
-            "Singing",
             "Mangas",
-            "Storytelling",
             "Basketball",
             "Video editing",
             "Graphic design",
