@@ -6,7 +6,7 @@ export default function SkillList({ skills }) {
       {skills.map((skill) => (
         <div
           key={skill}
-          className="br2 ft-bg-orange bold pa3-l pa2 dib ma1 shadow-1"
+          className="skill-tag"
         >
           {skill}
         </div>

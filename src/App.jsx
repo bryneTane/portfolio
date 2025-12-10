@@ -1,30 +1,24 @@
 import "./App.css";
-import Education from "./components/education";
-import Experience from "./components/experience";
 import Header from "./components/header";
-import Interests from "./components/interests";
-import Languages from "./components/languages";
-import Projects from "./components/projects";
-import Skills from "./components/skills";
 import Start from "./components/start";
+import About from "./components/about";
+import Experience from "./components/experience";
+import Education from "./components/education";
+import Skills from "./components/skills";
+import Projects from "./components/projects";
+import Contact from "./components/contact";
 
 function App() {
   return (
-    <div className="App ft-bg-black white relative">
+    <div className="App">
       <Header />
       <Start />
+      <About />
       <Experience />
       <Education />
       <Skills />
       <Projects />
-      <Languages />
-      <Interests />
-      <div
-        className="shadow-1 flex items-center justify-start pl7-l pl2"
-        style={{ height: 80 }}
-      >
-        © 2022 Friedrich Tane
-      </div>
+      <Contact />
     </div>
   );
 }

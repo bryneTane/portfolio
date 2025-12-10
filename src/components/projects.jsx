@@ -1,216 +1,239 @@
-import React from "react";
-import Card from "./elements/card";
-import SkillList from "./elements/skillList";
-import Title from "./elements/title";
+import React, { useState } from "react";
+import Modal from "./elements/modal";
 
 const projects = [
   {
+    id: 1,
     title: "La Mater",
-    imageUrl: "lamater.png",
-    logoUrl: "/lamater-logo-white.png",
-    Content: () => (
-      <div className="f5 tl w-70-l mv3">
-        <div className="f3 mv2 ft-orange">
-          La Mater Service - Remote (Cameroon) | Jan 2019 - Today
-        </div>
-        <div>
-          <div className="mv1">
-            Co-founder of a groceries delivery service.{" "}
-            <span className="ft-orange underline pointer">
-              https://lamater.net
-            </span>{" "}
-            I launched this service in Cameroon with some friends in 2019.
-            Today, La Mater is a team of 18 employees working in delivery and
-            software development. With this experience I develop my skills in
-            Fullstack Software Engineering (
-            <span className="ft-orange">Web, Mobile, Infrastructure</span>),
-            Graphic Design (<span className="ft-orange">Canva</span>), Video
-            Editing (
-            <span className="ft-orange">Adobe Premiere Pro, Powtoon</span>) and{" "}
-            <span className="ft-orange">Team Management</span>.
-          </div>
-        </div>
-      </div>
-    ),
+    subtitle: "Groceries Delivery Service",
+    image: "/lamater.png",
+    description:
+      "Co-founded a groceries delivery service in Cameroon with 18 employees. Full-stack development of web and mobile applications.",
+    longDescription:
+      "La Mater is a comprehensive groceries delivery service that I launched in Cameroon with friends in 2019. Today, La Mater has grown to a team of 18 employees working in delivery and software development. This experience has allowed me to develop skills in full-stack engineering, graphic design, video editing, and team management.",
+    tech: ["React", "Node.js", "Mobile Development", "AWS"],
     link: "https://lamater.net",
   },
   {
+    id: 2,
     title: "Hostme.space",
-    imageUrl: "hostme.png",
-    logoUrl: "/hostme-logo.png",
-    Content: () => (
-      <div className="f5 tl w-70-l mv3">
-        <div className="f3 mv2 ft-orange">
-          La Mater Service - Remote (Cameroon) | Jan 2019 - Today
-        </div>
-        <div>
-          <div className="mv1">
-            Hostme.space is a web hosting service I built with friends.{" "}
-            <span className="ft-orange underline pointer">
-              https://hostme.space
-            </span>
-            . We first built it for ourselves (to ease our own websites
-            deployments) and then later added a billing system (with{" "}
-            <span className="ft-orange">Stripe</span>) to open it to other
-            people.
-          </div>
-          <div className="mv1 white">
-            <SkillList
-              skills={[
-                "PHP",
-                "Laravel",
-                "MySQL",
-                "Apache",
-                "Stripe API",
-                "Github/Gitlab APIs",
-              ]}
-            />
-          </div>
-        </div>
-      </div>
-    ),
+    subtitle: "Web Hosting Platform",
+    image: "/hostme.png",
+    description:
+      "Built a web hosting service with billing integration, making deployment easier for developers.",
+    longDescription:
+      "Hostme.space is a web hosting service built with friends to simplify website deployments. Initially created for ourselves, we later added a billing system with Stripe to open it to other users.",
+    tech: ["PHP", "Laravel", "MySQL", "Stripe API", "Apache"],
     link: "https://hostme.space",
   },
   {
+    id: 3,
     title: "Kulturbot",
-    imageUrl: "kulturbot.png",
-    logoUrl: "/kulturbot-logo.png",
-    Content: () => (
-      <div className="f5 tl w-70-l mv3">
-        <div className="f3 mv2 ft-orange">
-          Paris, France | Sept 2022 - Today
-        </div>
-        <div>
-          <div className="mv1">
-            The Kulturbot is a Twitter bot (
-            <span className="ft-orange">@bot_kultur</span>) I built to launch a
-            questions/answers game on Twitter. I also made a React app (
-            <span className="ft-orange underline pointer">
-              https://kulturbot.app
-            </span>
-            ) to make it participative, allowing users to submit questions.
-          </div>
-          <div className="mv1 white">
-            <SkillList
-              skills={[
-                "TypeScript",
-                "React.js",
-                "Node.js",
-                "Terraform",
-                "AWS Lambda",
-                "AWS S3",
-                "AWS Cloudfront",
-                "Serverless",
-                "Firebase",
-              ]}
-            />
-          </div>
-        </div>
-      </div>
-    ),
+    subtitle: "Twitter Bot & Game Platform",
+    image: "/kulturbot.png",
+    description:
+      "Created an interactive Twitter bot for Q&A games with a participative React web app.",
+    longDescription:
+      "The Kulturbot is a Twitter bot (@bot_kultur) that runs a questions/answers game. Built a React app (https://kulturbot.app) to make it participative, allowing users to submit their own questions.",
+    tech: ["TypeScript", "React.js", "AWS Lambda", "Serverless", "Firebase"],
     link: "https://kulturbot.app",
   },
   {
+    id: 4,
     title: "Joke-Cam",
-    imageUrl: "joke.png",
-    logoUrl: "/joke-logo.png",
-    Content: () => (
-      <div className="f5 tl w-70-l mv3">
-        <div className="f3 mv2 ft-orange">
-          Élancourt, France | Mars 2020 - Avril 2020
-        </div>
-        <div>
-          <div className="mv1">
-            Joke-Cam is a social media like web app I built during the lockdown
-            in 2020 (Covid 19). I made this app for my friends who were bored
-            during the lockdown. They were able to share jokes and funny video
-            of themselves through Joke-Cam without publishing it on other social
-            media.
-          </div>
-          <div className="mv1 white">
-            <SkillList
-              skills={[
-                "Node.js",
-                "React.js",
-                "Express.js",
-                "Docker",
-                "MongoDB",
-                "Git",
-                "Apache",
-                "letsencrypt",
-                "Service Workers",
-              ]}
-            />
-          </div>
-        </div>
-      </div>
-    ),
+    subtitle: "Private Social Media App",
+    image: "/joke.png",
+    description:
+      "Social media app built during COVID-19 lockdown for friends to share jokes and videos privately.",
+    longDescription:
+      "Joke-Cam is a social media-like web app I built during the 2020 lockdown. It allowed my friends to share jokes and funny videos in a private environment without posting on public social media.",
+    tech: [
+      "Node.js",
+      "React.js",
+      "Express.js",
+      "MongoDB",
+      "Docker",
+      "Service Workers",
+    ],
+    link: null,
   },
   {
+    id: 5,
     title: "REACH Blockchain",
-    imageUrl: "reach.png",
-    logoUrl: "/reach-logo.png",
-    Content: () => (
-      <div className="f5 tl w-70-l mv3">
-        <div className="f3 mv2 ft-orange">
-          ESIGELEC / Airbus Defense And Space - Rouen, France | Dec 2019 - Jan
-          2020
-        </div>
-        <div>
-          <div className="mv1">
-            My last project at ESIGELEC was a tool for tracing chemical
-            substances in Airbus Defence and Space items through a Blockchain. I
-            worked on this project in a group of 6 students and at the end of
-            the project we went to Airbus Defense and Space to do a presentation
-            of the solution and deliver it.
-          </div>
-          <div className="mv1">
-            Implementation of an <span className="ft-orange">Ethereum</span>{" "}
-            blockchain,{" "}
-            <span className="ft-orange">Proof of Authority method</span>
-          </div>
-          <div className="mv1">
-            Development of a <span className="ft-orange">REST API</span>
-          </div>
-          <div className="mv1">
-            Development of <span className="ft-orange">Smart Contracts</span>{" "}
-          </div>
-          <div className="mv1">
-            Work in a team of <span className="ft-orange">six</span>, project
-            management in <span className="ft-orange">agile method</span>,
-            interactions with the customer (Airbus Defence and Space){" "}
-          </div>
-          <div className="mv1 white">
-            <SkillList
-              skills={[
-                "Node.js",
-                "Geth",
-                "Docker",
-                "Solidity",
-                "Laravel",
-                "Linux",
-                "AWS EC2",
-                "Git",
-              ]}
-            />
-          </div>
-        </div>
-      </div>
-    ),
+    subtitle: "Chemical Tracing System",
+    image: "/reach.png",
+    description:
+      "Blockchain solution for tracing chemical substances in Airbus Defence and Space items.",
+    longDescription:
+      "My final ESIGELEC project was a blockchain-based tool for tracing chemical substances in Airbus Defence and Space items. Worked in a team of 6 students, implementing an Ethereum blockchain with Proof of Authority method, developing smart contracts and a REST API.",
+    tech: ["Node.js", "Ethereum", "Solidity", "Docker", "Laravel", "AWS EC2"],
+    link: null,
   },
 ];
 
 export default function Projects() {
+  const [selectedProject, setSelectedProject] = useState(null);
+
   return (
-    <div id="projects" className="mv6-l mv5 ph5-l ph3">
-      <Title text={"side projects"} />
-      <div className="ph4-l">
-        {projects.map((project) => (
-          <div className="dib">
-            <Card key={project.title} width={300} height={300} {...project} />
-          </div>
-        ))}
+    <section id="projects" className="section">
+      <div className="container">
+        <h2 className="section-title">PROJECTS</h2>
+        <p className="section-subtitle">
+          Personal projects and entrepreneurial ventures
+        </p>
+
+        <div className="grid-3">
+          {projects.map((project) => (
+            <div
+              key={project.id}
+              style={{
+                border: "1px solid var(--term-border)",
+                background: "var(--term-bg)",
+                padding: 0,
+                overflow: "hidden",
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+              onClick={() => setSelectedProject(project)}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "var(--term-orange)";
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow =
+                  "0 4px 12px rgba(246, 139, 72, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "var(--term-border)";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              {/* Project Image */}
+              <div
+                style={{
+                  height: "180px",
+                  background: `url(${project.image}) center/cover`,
+                  position: "relative",
+                  filter: "grayscale(0.5)",
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    background:
+                      "linear-gradient(to top, rgba(0,0,0,0.95), transparent)",
+                    padding: "40px 16px 16px",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: "16px",
+                      fontWeight: 700,
+                      color: "var(--term-orange)",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    {project.title}
+                  </div>
+                  <div
+                    style={{ fontSize: "11px", color: "var(--term-text-dim)" }}
+                  >
+                    {project.subtitle}
+                  </div>
+                </div>
+              </div>
+
+              {/* Project Info */}
+              <div style={{ padding: "16px" }}>
+                <p
+                  style={{
+                    color: "var(--term-text)",
+                    marginBottom: "12px",
+                    fontSize: "12px",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {project.description}
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                  {project.tech.slice(0, 3).map((tech) => (
+                    <span
+                      key={tech}
+                      className="tag"
+                      style={{ fontSize: "10px", padding: "3px 8px" }}
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                  {project.tech.length > 3 && (
+                    <span
+                      className="tag"
+                      style={{ fontSize: "10px", padding: "3px 8px" }}
+                    >
+                      +{project.tech.length - 3}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+
+      {/* Modal */}
+      {selectedProject && (
+        <Modal
+          isVisible={!!selectedProject}
+          hide={() => setSelectedProject(null)}
+          title={selectedProject.title}
+          cta={
+            selectedProject.link && (
+              <div
+                style={{
+                  marginTop: "24px",
+                  paddingTop: "24px",
+                  borderTop: "1px solid var(--term-border)",
+                }}
+              >
+                <a
+                  href={selectedProject.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn"
+                  style={{ textDecoration: "none" }}
+                >
+                  Visit Website
+                </a>
+              </div>
+            )
+          }
+        >
+          <div
+            style={{
+              color: "var(--term-text)",
+              lineHeight: 1.7,
+              marginBottom: "24px",
+              fontSize: "13px",
+            }}
+          >
+            {selectedProject.longDescription}
+          </div>
+          <div>
+            <div className="prompt" style={{ marginBottom: "12px" }}>
+              Technologies
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+              {selectedProject.tech.map((tech) => (
+                <span key={tech} className="tag">
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </div>
+        </Modal>
+      )}
+    </section>
   );
 }

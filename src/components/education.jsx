@@ -1,87 +1,95 @@
 import React from "react";
-import Title from "./elements/title";
+
+const educationData = [
+  {
+    degree: "Software Engineering Degree",
+    school: "ESIGELEC",
+    location: "Rouen, France",
+    period: "2017 - 2020",
+    logo: "/esigelec-logo.png",
+    description: "Specialized in software development, web services (REST), and information system security. Gained hands-on experience with agile methodologies managing medium-scale software teams.",
+    highlights: [
+      "Software development (Java, JavaScript, Android, C#, C++)",
+      "Web services & REST APIs",
+      "Network architecture & Linux administration",
+      "Information system security & Data encryption",
+      "Agile project management",
+    ],
+  },
+  {
+    degree: "Classes Préparatoires (MPSI)",
+    school: "PrépaVogt",
+    location: "Yaoundé, Cameroon",
+    period: "2015 - 2017",
+    logo: "/prepavogt-logo.png",
+    description: "Intensive two-year preparatory program in Mathematics and Physics for entrance to engineering schools.",
+    highlights: [
+      "Advanced Mathematics & Physics",
+      "Engineering sciences",
+      "Software development (C, HTML, CSS, JS, PHP)",
+      "Electronics fundamentals",
+    ],
+  },
+];
 
 export default function Education() {
   return (
-    <div id="education" className="mv6-l mv5 ph5-l ph3">
-      <Title text={"education"} />
-      <div className="ph4-l">
-        <div className="flex mv4">
-          <div className="flex-l dn flex-column items-center w-30">
-            <img
-              src="/esigelec-logo.png"
-              style={{ width: 180 }}
-              alt="esigelec"
-            />
-            <div className="vline h-100 mt3" />
-          </div>
-          <div className="f4 tl w-70-l w-100">
-            <img
-              src="/esigelec-logo.png"
-              style={{ width: 180 }}
-              alt="esigelec"
-              className="dn-l mb3"
-            />
-            <div className="f2">Software Engineering Degree</div>
-            <div className="f3 mv2 ft-orange">
-              ESIGELEC - Rouen, France | Sept 2017 - Sept 2020
-            </div>
-            <div>
-              <div className="mv1">
-                Software development (
-                <span className="ft-orange">
-                  Java, JavaScript, Android, C#, C++
-                </span>
-                ), Web services (<span className="ft-orange">REST</span>)
-              </div>
-              <div className="mv1">
-                Software projects management (medium scale agile software teams)
-              </div>
-              <div className="mv1">
-                Networks and Operating systems (
-                <span className="ft-orange">
-                  Network architecture, Linux, Web servers, Raspberry
-                </span>
-                )
-              </div>
-              <div className="mv1">
-                Informaion System security (
-                <span className="ft-orange">Data Encryption</span>)
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="flex mv4">
-          <div className="flex-l dn flex-column items-center w-30">
-            <img
-              src="/prepavogt-logo.png"
-              style={{ width: 60 }}
-              alt="prepavogt"
-            />
-            <div className="vline h-100 mt3" />
-          </div>
-          <div className="f4 tl w-70-l w-100">
-            <img
-              src="/prepavogt-logo.png"
-              style={{ width: 60 }}
-              alt="prepavogt"
-              className="dn-l"
-            />
-            <div className="f2">
-              Classes Préparatoires aux Grandes Écoles, MPSI
-            </div>
-            <div className="f3 mv2 ft-orange">
-              PrépaVogt - Yaoundé, Cameroon | Sept 2015 - Juin 2017
-            </div>
-            <div>
-              <div className="mv1">
-                Mathematics, Physics, Engineering sciences, Software development
-                (C, HTML, CSS, JS, PHP), Electronics
+    <section id="education" className="section section-alt">
+      <div className="container">
+        <h2 className="section-title">EDUCATION</h2>
+        <p className="section-subtitle">Academic background and formal training</p>
+
+        <div className="timeline">
+          {educationData.map((edu, index) => (
+            <div key={index} className="timeline-item">
+              <div className="content-box">
+                {/* Header */}
+                <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                  <div
+                    style={{
+                      padding: '12px',
+                      background: 'var(--term-bg-alt)',
+                      border: '1px solid var(--term-border)',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <img
+                      src={edu.logo}
+                      alt={edu.school}
+                      style={{ height: '40px', display: 'block' }}
+                    />
+                  </div>
+                  <div style={{ flex: 1, minWidth: '200px' }}>
+                    <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '6px', color: 'var(--term-orange)' }}>
+                      {edu.degree}
+                    </h3>
+                    <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--term-text)', marginBottom: '4px' }}>
+                      {edu.school}
+                    </div>
+                    <div style={{ color: 'var(--term-text-dim)', fontSize: '12px' }}>
+                      {edu.location} • {edu.period}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <p style={{ color: 'var(--term-text)', lineHeight: 1.7, marginBottom: '16px', fontSize: '13px' }}>
+                  {edu.description}
+                </p>
+
+                {/* Highlights */}
+                <ul className="term-list">
+                  {edu.highlights.map((highlight, i) => (
+                    <li key={i} style={{ fontSize: '12px' }}>
+                      {highlight}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
