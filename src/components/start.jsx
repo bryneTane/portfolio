@@ -17,6 +17,7 @@ export default function Start() {
       <div className="container">
         {/* ASCII Art Header */}
         <pre
+          className="mobile-hide"
           style={{
             color: "var(--term-orange)",
             fontSize: "10px",
@@ -82,7 +83,10 @@ export default function Start() {
                 CI/CD
               </div> */}
 
-              <div style={{ display: "flex", gap: "12px", marginTop: "24px" }}>
+              <div
+                className="grid-2"
+                style={{ marginTop: "24px", textAlign: "center" }}
+              >
                 <a href="#contact" className="btn">
                   Contact
                 </a>

@@ -73,7 +73,6 @@ export default function Experience() {
                 <div
                   style={{
                     display: "flex",
-                    alignItems: "flex-start",
                     gap: "16px",
                     marginBottom: "20px",
                     flexWrap: "wrap",
@@ -81,6 +80,8 @@ export default function Experience() {
                 >
                   <div
                     style={{
+                      display: "flex",
+                      alignItems: "center",
                       padding: "12px",
                       background: "var(--term-bg-alt)",
                       border: "1px solid var(--term-border)",

@@ -126,7 +126,6 @@ body,
   color: var(--term-cyan);
 }
 
-/* Section Styles - Break the Grid */
 .section {
   padding: 60px 20px;
   max-width: 1400px;
@@ -247,7 +246,7 @@ body,
 
 .btn-alt:hover {
   background: var(--term-text);
-  color: var(--brand-black);
+  color: white;
 }
 
 /* Grid - Horizontal Cards Layout */
@@ -359,17 +358,6 @@ pre {
 .timeline {
   position: relative;
   padding-left: 40px;
-}
-
-.timeline::before {
-  content: "│";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  color: var(--term-orange);
-  font-size: 20px;
-  line-height: 40px;
 }
 
 .timeline-item {
@@ -601,8 +589,18 @@ pre {
     font-size: 11px;
   }
 
-  /* Hide photo on mobile */
-  .term-window.mobile-hide {
+  /* Hide on mobile */
+  .mobile-hide {
+    display: none !important;
+  }
+
+  /* Remove timeline decorations on mobile */
+  .timeline {
+    padding-left: 0;
+  }
+
+  .timeline::before,
+  .timeline-item::before {
     display: none;
   }
 
