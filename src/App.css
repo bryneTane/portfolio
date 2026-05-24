@@ -845,3 +845,222 @@ pre {
     display: flex;
   }
 }
+
+/* Article prose (MDX rendered content) */
+.article-prose {
+  color: var(--term-text);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.article-prose h2 {
+  color: var(--term-orange);
+  font-size: 22px;
+  margin: 40px 0 16px;
+  scroll-margin-top: 100px;
+}
+
+.article-prose h3 {
+  color: var(--term-orange-bright);
+  font-size: 18px;
+  margin: 32px 0 12px;
+  scroll-margin-top: 100px;
+}
+
+.article-prose p {
+  margin: 0 0 20px;
+}
+
+.article-prose a {
+  color: var(--term-orange);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.article-prose a:hover {
+  color: var(--term-orange-bright);
+}
+
+.article-prose ul,
+.article-prose ol {
+  margin: 0 0 20px;
+  padding-left: 24px;
+}
+
+.article-prose li {
+  margin-bottom: 8px;
+}
+
+/* Inline code (not inside <pre>) */
+.article-prose :not(pre) > code {
+  background: var(--term-bg-alt);
+  border: 1px solid var(--term-border);
+  padding: 2px 6px;
+  font-size: 0.92em;
+  color: var(--term-orange);
+}
+
+/* Code block container (rehype-pretty-code wraps figure -> pre -> code) */
+.article-prose figure[data-rehype-pretty-code-figure] {
+  position: relative;
+  margin: 0 0 24px;
+  border: 1px solid var(--term-border);
+  background: var(--term-bg-alt);
+  overflow: hidden;
+  padding-top: 30px;
+}
+
+/* Language header strip — sits above the code, never overlaps it.
+   Anchored to the figure so it stays put while the pre scrolls. */
+.article-prose figure[data-rehype-pretty-code-figure] > pre[data-language]::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 14px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--term-text-dim);
+  background: var(--term-bg);
+  border-bottom: 1px solid var(--term-border);
+  pointer-events: none;
+}
+
+/* If a figcaption (filename) is present, it acts as the header strip instead. */
+.article-prose figure[data-rehype-pretty-code-figure]:has(figcaption) {
+  padding-top: 0;
+}
+
+.article-prose figure[data-rehype-pretty-code-figure]:has(figcaption) > pre[data-language]::before {
+  display: none;
+}
+
+.article-prose figcaption[data-rehype-pretty-code-title] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: var(--term-text-dim);
+  border-bottom: 1px solid var(--term-border);
+  background: var(--term-bg);
+}
+
+/* Show language alongside filename when both are present */
+.article-prose figcaption[data-rehype-pretty-code-title]::after {
+  content: attr(data-language);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--term-text-dim);
+  opacity: 0.7;
+}
+
+/* The <pre> itself */
+.article-prose pre[data-language] {
+  margin: 0;
+  padding: 16px 16px 16px 0;
+  overflow-x: auto;
+  background: transparent;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* Code lines: Shiki emits one <span data-line> per line */
+.article-prose pre[data-language] code {
+  display: grid;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  counter-reset: line;
+}
+
+.article-prose pre[data-language] [data-line] {
+  padding: 0 16px;
+  border-left: 2px solid transparent;
+}
+
+/* Optional line numbers — enable per-block via {showLineNumbers} in MDX */
+.article-prose pre[data-line-numbers] [data-line]::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 1.6rem;
+  margin-right: 1rem;
+  text-align: right;
+  color: var(--term-text-dim);
+}
+
+/* Highlighted lines via {1,3-5} */
+.article-prose [data-highlighted-line] {
+  background: rgba(246, 139, 72, 0.08);
+  border-left-color: var(--term-orange) !important;
+}
+
+/* Inline highlighted words via `text{:js}` ranges */
+.article-prose [data-highlighted-chars] {
+  background: rgba(246, 139, 72, 0.15);
+  padding: 1px 3px;
+  border-radius: 2px;
+}
+
+/*
+ * Shiki dual-theme: rehype-pretty-code emits two color values per token
+ * (style="--shiki-light:...;--shiki-dark:..."). We pick which to render
+ * based on [data-theme] from the ThemeContext.
+ */
+[data-theme="dark"] .article-prose pre[data-language] span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+[data-theme="light"] .article-prose pre[data-language] span {
+  color: var(--shiki-light) !important;
+  background-color: var(--shiki-light-bg) !important;
+}
+
+.article-prose blockquote {
+  border-left: 3px solid var(--term-orange);
+  padding: 4px 16px;
+  margin: 0 0 20px;
+  color: var(--term-text-dim);
+  font-style: italic;
+}
+
+.article-prose img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--term-border);
+}
+
+.article-prose hr {
+  border: 0;
+  border-top: 1px solid var(--term-border);
+  margin: 32px 0;
+}
+
+.article-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 20px;
+  font-size: 13px;
+}
+
+.article-prose th,
+.article-prose td {
+  border: 1px solid var(--term-border);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.article-prose th {
+  background: var(--term-bg-alt);
+  color: var(--term-orange);
+}

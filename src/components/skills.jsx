@@ -1,3 +1,5 @@
+'use client';
+
 import React from "react";
 
 // Comprehensive list of all technologies with logos

@@ -1,7 +1,9 @@
+"use client";
+
 import React from "react";
 import { generateAsciiArt } from "../utils/asciiArt";
 
-export default function Start() {
+export default function Start({ latestArticles = [] }) {
   return (
     <section
       id="start"
@@ -16,7 +18,7 @@ export default function Start() {
     >
       <div className="container">
         {/* ASCII Art Header */}
-        <pre
+        {/* <pre
           className="mobile-hide"
           style={{
             color: "var(--term-orange)",
@@ -28,7 +30,7 @@ export default function Start() {
           }}
         >
           {generateAsciiArt("Software engineer")}
-        </pre>
+        </pre> */}
 
         {/* Main Content - Asymmetric Layout */}
         <div className="grid-asymmetric" style={{ alignItems: "start" }}>
@@ -136,7 +138,7 @@ export default function Start() {
           {/* Right: System Info + Image */}
           <div>
             {/* Profile Image in Terminal Window */}
-            <div
+            {/* <div
               className="term-window mobile-hide"
               style={{ marginBottom: "20px" }}
             >
@@ -148,7 +150,7 @@ export default function Start() {
               </div>
               <div style={{ padding: 0, height: "300px", overflow: "hidden" }}>
                 <img
-                  src="./ft.jpg"
+                  src="/ft.jpg"
                   alt="Friedrich Tane"
                   style={{
                     width: "100%",
@@ -160,11 +162,11 @@ export default function Start() {
                   }}
                 />
               </div>
-            </div>
+            </div> */}
 
             {/* System Status */}
             <div className="terminal-block">
-              <div className="term-header">SYSTEM STATUS</div>
+              <div className="term-header">STATUS</div>
               <div style={{ fontSize: "12px", lineHeight: 1.8 }}>
                 <div
                   style={{ display: "flex", justifyContent: "space-between" }}
@@ -202,6 +204,73 @@ export default function Start() {
                 </div>
               </div>
             </div>
+
+            {/* Latest Articles */}
+            {latestArticles.length > 0 && (
+              <div className="terminal-block" style={{ marginTop: "20px" }}>
+                <div
+                  className="term-header"
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <span>LATEST ARTICLES</span>
+                  <a
+                    href="/articles"
+                    style={{
+                      color: "var(--term-text-dim)",
+                      textDecoration: "none",
+                    }}
+                  >
+                    all →
+                  </a>
+                </div>
+                <div style={{ fontSize: "12px", lineHeight: 1.8 }}>
+                  {latestArticles.map((article) => (
+                    <a
+                      key={article.slug}
+                      href={`/articles/${article.slug}`}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "baseline",
+                        gap: "12px",
+                        textDecoration: "none",
+                        padding: "2px 0",
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: "var(--term-orange)",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {article.title}
+                      </span>
+                      {article.date && (
+                        <time
+                          dateTime={article.date}
+                          style={{
+                            color: "var(--term-text-dim)",
+                            fontSize: "11px",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {new Date(article.date).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </time>
+                      )}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

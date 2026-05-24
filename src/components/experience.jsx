@@ -2,11 +2,31 @@ import React from "react";
 
 const experiences = [
   {
+    company: "TheFork",
+    logo: "/thefork-logo.png",
+    role: "Software Engineer",
+    location: "Paris, France",
+    period: "June 2023 - Present",
+    description: "",
+    achievements: [],
+    skills: [
+      "TypeScript",
+      "Node.js",
+      "React.js",
+      "GraphQL (Apollo)",
+      "PostgreSQL",
+      "Docker",
+      "AWS",
+      "Jest",
+      "Cypress",
+    ],
+  },
+  {
     company: "Teamstarter",
     logo: "/teamstarter-logo.png",
     role: "Software Engineer",
     location: "Paris, France",
-    period: "Oct 2020 - Present",
+    period: "Oct 2020 - June 2023",
     description:
       "Leading technical development and team management for the Teamstarter platform.",
     achievements: [

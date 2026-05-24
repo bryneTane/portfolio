@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { useTheme } from "../context/ThemeContext";
 
@@ -7,12 +9,13 @@ export default function Header() {
   const { isDark, toggleTheme } = useTheme();
 
   const navItems = [
-    { name: "about", href: "#about" },
-    { name: "experience", href: "#experience" },
-    { name: "education", href: "#education" },
-    { name: "projects", href: "#projects" },
-    { name: "skills", href: "#skills" },
-    { name: "contact", href: "#contact" },
+    { name: "about", href: "/#about" },
+    { name: "experience", href: "/#experience" },
+    { name: "education", href: "/#education" },
+    { name: "projects", href: "/#projects" },
+    { name: "skills", href: "/#skills" },
+    { name: "articles", href: "/articles" },
+    { name: "contact", href: "/#contact" },
   ];
 
   useEffect(() => {
@@ -44,9 +47,9 @@ export default function Header() {
     <>
       <header className="header">
         {/* Logo */}
-        <a href="#start" style={{ textDecoration: "none" }}>
+        <a href="/" style={{ textDecoration: "none" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <img src="/logo-ft.png" alt="FT" style={{ height: "32px" }} />
+            {/* <img src="/logo-ft.png" alt="FT" style={{ height: "32px" }} /> */}
             <span
               style={{
                 color: "var(--term-orange)",
@@ -54,7 +57,7 @@ export default function Header() {
                 fontWeight: 700,
               }}
             >
-              FRIEDRICH
+              Software engineer
             </span>
           </div>
         </a>
