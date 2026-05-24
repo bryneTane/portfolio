@@ -727,7 +727,7 @@ pre {
 .mobile-sidebar {
   position: fixed;
   top: 0;
-  right: -100%;
+  right: 0;
   width: 280px;
   max-width: 85vw;
   height: 100vh;
@@ -736,12 +736,15 @@ pre {
   z-index: 1999;
   display: flex;
   flex-direction: column;
-  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
+  visibility: hidden;
 }
 
 .mobile-sidebar.open {
-  right: 0;
+  transform: translateX(0);
+  visibility: visible;
 }
 
 /* Mobile Sidebar Header */
@@ -851,6 +854,8 @@ pre {
   color: var(--term-text);
   font-size: 15px;
   line-height: 1.8;
+  overflow-wrap: anywhere;
+  word-wrap: break-word;
 }
 
 .article-prose h2 {
