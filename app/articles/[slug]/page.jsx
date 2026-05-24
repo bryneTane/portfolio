@@ -10,6 +10,14 @@ const prettyCodeOptions = {
   keepBackground: false,
   defaultLang: "plaintext",
 };
+
+const mdxComponents = {
+  table: (props) => (
+    <div className="article-prose-table-wrap">
+      <table {...props} />
+    </div>
+  ),
+};
 import Header from "../../../src/components/header";
 import { getAllArticleSlugs, getArticleBySlug } from "../../../src/lib/articles";
 
@@ -136,6 +144,7 @@ export default async function ArticlePage({ params }) {
           <div className="article-prose">
             <MDXRemote
               source={article.content}
+              components={mdxComponents}
               options={{
                 mdxOptions: {
                   remarkPlugins: [remarkGfm],

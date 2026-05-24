@@ -239,6 +239,7 @@ export default function Start({ latestArticles = [] }) {
                         gap: "12px",
                         textDecoration: "none",
                         padding: "2px 0",
+                        minWidth: 0,
                       }}
                     >
                       <span
@@ -247,6 +248,8 @@ export default function Start({ latestArticles = [] }) {
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
+                          minWidth: 0,
+                          flex: 1,
                         }}
                       >
                         {article.title}

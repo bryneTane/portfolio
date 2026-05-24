@@ -47,17 +47,18 @@ export default function Header() {
     <>
       <header className="header">
         {/* Logo */}
-        <a href="/" style={{ textDecoration: "none" }}>
+        <a href="/" style={{ textDecoration: "none" }} aria-label="Home">
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             {/* <img src="/logo-ft.png" alt="FT" style={{ height: "32px" }} /> */}
             <span
               style={{
                 color: "var(--term-orange)",
-                fontSize: "16px",
+                fontSize: "18px",
                 fontWeight: 700,
+                letterSpacing: "1px",
               }}
             >
-              Software engineer
+              ~/
             </span>
           </div>
         </a>
