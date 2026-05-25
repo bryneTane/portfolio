@@ -12,7 +12,7 @@ const projects = [
     description:
       "Connects code repos and observability tools (Sentry, Datadog) and ranks fixes by business impact on real users, not technical severity.",
     longDescription:
-      "Lumorem is a performance audit platform for engineering teams. It plugs into a GitHub repo and an observability stack (Sentry, Datadog) and returns a ranked list of exactly what to fix, in what order, with concrete code changes. Ranking is driven by business impact on real users (degradation, frequency, frustration, effort) instead of raw technical severity. Built on Next.js, Claude (Sonnet) orchestrated with LangGraph, Postgres on Supabase, a GitHub App for repo access, and a Cloud Tasks + PartyKit pipeline so long audits survive request lifetimes.",
+      "Lumorem is a performance audit platform for engineering teams. It plugs into a GitHub repo and an observability stack (Sentry, Datadog) and returns a ranked list of exactly what to fix, in what order, with concrete code changes. Ranking is driven by business impact on real users (degradation, frequency, frustration, effort) instead of raw technical severity. Built on Next.js, Claude (Sonnet) orchestrated with LangGraph, Postgres on Neon with Prisma, Better Auth for accounts and orgs, a GitHub App for repo access, and a Cloud Tasks + PartyKit pipeline so long audits survive request lifetimes.",
     tech: [
       "Next.js",
       "TypeScript",
@@ -21,7 +21,8 @@ const projects = [
       "Cloud Tasks",
       "PartyKit",
       "Prisma",
-      "Supabase",
+      "Neon",
+      "Better Auth",
       "Docker",
       "Stripe",
     ],
