@@ -61,7 +61,7 @@ export default function Start({ latestArticles = [] }) {
                     marginTop: "4px",
                   }}
                 >
-                  Paris, France | @Teamstarter
+                  Paris, France | @TheFork
                 </div>
               </div>
 

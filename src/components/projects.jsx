@@ -1,9 +1,54 @@
-'use client';
+"use client";
 
 import React, { useState } from "react";
 import Modal from "./elements/modal";
 
 const projects = [
+  {
+    id: 6,
+    title: "Lumorem",
+    subtitle: "Performance Audit Platform",
+    image: "/lumorem.png",
+    description:
+      "Connects code repos and observability tools (Sentry, Datadog) and ranks fixes by business impact on real users, not technical severity.",
+    longDescription:
+      "Lumorem is a performance audit platform for engineering teams. It plugs into a GitHub repo and an observability stack (Sentry, Datadog) and returns a ranked list of exactly what to fix, in what order, with concrete code changes. Ranking is driven by business impact on real users (degradation, frequency, frustration, effort) instead of raw technical severity. Built on Next.js, Claude (Sonnet) orchestrated with LangGraph, Postgres on Supabase, a GitHub App for repo access, and a Cloud Tasks + PartyKit pipeline so long audits survive request lifetimes.",
+    tech: [
+      "Next.js",
+      "TypeScript",
+      "Claude API",
+      "LangGraph",
+      "Cloud Tasks",
+      "PartyKit",
+      "Prisma",
+      "Supabase",
+      "Docker",
+      "Stripe",
+    ],
+    link: "https://lumorem.com",
+  },
+  {
+    id: 7,
+    title: "MirrAI",
+    subtitle: "AI Outfit Visualization",
+    image: "/mirrai.png",
+    description:
+      "Visualize outfits from your wardrobe before you wear them. Mix pieces from your closet with items spotted online, on your own body, in seconds.",
+    longDescription:
+      "MirrAI turns your closet into a canvas. Users photograph clothes they own, drop in items spotted online, and see complete outfits on their own body before wearing them. Built around the daily 'what should I wear today' question rather than the occasional 'should I buy this'. Auto-detects clothing type to pick the right base photo automatically. Powered by IDM-VTON for photorealistic results in 15 to 25 seconds, on a Next.js + Supabase + Cloud Run stack. Long-running generation uses Vercel after() with Supabase Realtime so progress survives flaky mobile connections.",
+    tech: [
+      "Next.js",
+      "TypeScript",
+      "Supabase",
+      "Cloud Run",
+      "Replicate",
+      "Prisma",
+      "Plasmo",
+      "Docker",
+      "Stripe",
+    ],
+    link: "https://mirraitryon.com",
+  },
   {
     id: 1,
     title: "La Mater",
@@ -113,7 +158,9 @@ export default function Projects() {
               <div
                 style={{
                   height: "180px",
-                  background: `url(${project.image}) center/cover`,
+                  background: project.image
+                    ? `url(${project.image}) center/cover, linear-gradient(135deg, var(--term-bg-alt), var(--term-bg))`
+                    : "linear-gradient(135deg, var(--term-bg-alt), var(--term-bg))",
                   position: "relative",
                   filter: "grayscale(0.5)",
                 }}
