@@ -1,0 +1,200 @@
+---
+title: "Where security lives when uploads bypass your server"
+description: "Direct browser-to-storage uploads push the security boundary out of application code. Where the boundary sits instead on MirrAI."
+date: "2026-06-01"
+tags: ["security", "serverless", "supabase"]
+---
+
+On [MirrAI](https://mirraitryon.com), the photo a user uploads never passes through the application server. The browser sends it straight to object storage. Anything that needs to be enforced before the file lands has to live somewhere outside application code. This article walks through where it lives.
+
+## Direct upload is the architecture
+
+A few reasons for the choice:
+
+- A try-on photo runs from a few hundred kilobytes to several megabytes after client-side compression. Routing every one of those through a Vercel function would mean tying up a serverless instance for the full upload, on a runtime metered by execution time and bounded on memory.
+- Vercel's Hobby tier rejects request bodies over 4.5 MB, which turns this from preference into requirement on the current setup.
+- The browser reaches the storage region directly, one hop. Through a function it is two hops, with the same bytes carried twice.
+- Storage handles concurrency well beyond what a serverless function tier sustains for byte-pushing work.
+- Resumable upload protocols (multipart, TUS) live natively on object storage, not on serverless functions.
+
+```
+                Vercel Functions
+                ┌──────────────┐
+       ┌────────│ application  │── most reads, business logic, ...
+       │        └──────────────┘
+       │
+       │ JWT'd POST (small)
+       ▼
+┌─────────────────┐                ┌────────────────────┐
+│ upload function │── upload as ───│  object storage    │
+│ (Supabase Edge) │   the user     │  <bucket>/<uid>/   │
+└─────────────────┘                └────────────────────┘
+       ▲
+       │ multipart photo
+   browser
+```
+
+Everything past this point is about where the things that used to live inside application code went instead.
+
+## EXIF stripping at the gate
+
+A phone-camera JPEG carries an EXIF block: GPS coordinates, phone model, lens, ISO, exposure, original timestamp. The strip itself is straightforward; the only architectural question is where to run it.
+
+Client-side stripping (canvas redraw, `exifr-erase`, anything else) runs on a machine the user controls. Nothing in that environment forces the script to actually execute before the bytes leave the browser, and a modified or replayed request can skip it entirely. So client-side stripping is a UX optimization, not a security control. The control has to run on back-end side.
+
+I decided to run a Supabase Edge Function. It runs in the same region as the storage bucket on Deno (so `sharp` and its native bindings are out, `magick-wasm` is what Supabase recommends for this), accepts a JWT'd POST from the browser, re-encodes the JPEG with metadata dropped, and writes the cleaned file to storage as the calling user.
+
+```ts
+Deno.serve(async (req) => {
+  const user = await getUserFromJwt(req);
+  if (!user) return new Response("Unauthorized", { status: 401 });
+
+  const { success } = await limiter.limit(user.id);
+  if (!success) return new Response("Too many requests", { status: 429 });
+
+  const file = (await req.formData()).get("file") as File;
+  if (file.size > 10 * 1024 * 1024)
+    return new Response("Too large", { status: 413 });
+
+  const clean = await stripMetadata(new Uint8Array(await file.arrayBuffer()));
+  const path = `${user.id}/${crypto.randomUUID()}.jpg`;
+
+  await supabaseAsUser.storage
+    .from("<bucket>")
+    .upload(path, clean, { contentType: "image/jpeg" });
+
+  return Response.json({ storagePath: path });
+});
+
+function stripMetadata(input: Uint8Array): Promise<Uint8Array> {
+  return new Promise((resolve) => {
+    ImageMagick.read(input, (img) => {
+      img.autoOrient(); // bake EXIF orientation into the pixels
+      img.strip(); // drop every metadata block
+      img.quality = 90;
+      img.write(MagickFormat.Jpeg, (data) => resolve(new Uint8Array(data)));
+    });
+  });
+}
+```
+
+A managed image proxy (Cloudflare Images, imgproxy as a sidecar) would have solved the same problem with less code and a different vendor relationship. The stack already had a Supabase-shaped answer, and a fourth provider for one transformation step did not earn the integration surface.
+
+## The service-role split
+
+Supabase ships two ways to authenticate against the database and storage from server code:
+
+- **The user's JWT**, obtained at sign-in and forwarded through the user-scoped client. Anything called with it runs subject to whatever Row-Level Security policies apply on the target bucket or table.
+- **The service role**, a long-lived key with full bypass authority. Anything called with it can read, write, or delete anything in the database and storage, with RLS not applying at all.
+
+On [MirrAI](https://mirraitryon.com), code paths handling user-owned data run with the user's JWT. The service role is reserved for paths where it is genuinely necessary: admin tooling guarded by `requireAdmin`, the worker that finalizes a generation after the AI call returns, account deletion.
+
+User-scoped upload (the API route that handles a wardrobe item the user added through the browser extension):
+
+```ts
+const supabase = await createUserClient(request);
+await supabase.storage
+  .from("<bucket>")
+  .upload(path, sanitized, { contentType: "image/jpeg" });
+```
+
+Admin-scoped upload (a generation tool that builds test assets):
+
+```ts
+export async function POST(request: NextRequest) {
+  const admin = await requireApiAdmin(request)
+  if (!admin) return NextResponse.json({ error: "forbidden" }, { status: 403 })
+
+  const supabaseAdmin = createAdminClient(URL, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+  await supabaseAdmin.storage.from("<bucket>").upload(...)
+}
+```
+
+The point of the split: every code path that uses the service role is bypassing RLS, which means authorization for that path has to be reasserted at the application layer. Keeping the service-role footprint small keeps the number of "this is where I have to reassert authorization" spots small and visible.
+
+## RLS on the storage layer
+
+The storage policy is the authorization on file reads and writes. It runs on every request, whether the client comes through the upload function, through a user-scoped server call, or directly from a Supabase SDK call elsewhere in the app.
+
+```sql
+create policy "owner read"
+  on storage.objects for select
+  using (
+    bucket_id = '<bucket>'
+    and auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+create policy "owner write"
+  on storage.objects for insert
+  with check (
+    bucket_id = '<bucket>'
+    and auth.uid()::text = (storage.foldername(name))[1]
+  );
+```
+
+The shape of the path matters. Files live under `<user-id>/...`, and the policy reads the first folder segment, matching it against `auth.uid()`. Everything below the user-id segment is shape the application decides. When two buckets share the same identity-first layout, they share the policy template.
+
+This policy gates storage. It does not gate database tables. Application code talks to Postgres through Prisma using the direct connection string, which bypasses Postgres RLS by design. Database-row authorization is therefore at the application layer: every API route that reads or writes user-owned rows scopes its query by `userId === session.user.id`, and admin views go through `requireAdmin` before they touch anything.
+
+## Rate limits at three layers
+
+A single rate limit anywhere in the stack leaves a different flank open. The API-handler limit guards inference quota but not direct uploads. The edge-middleware limit catches unauthenticated noise before it reaches a function but does nothing for an authenticated user hammering a generation endpoint. The Edge Function limit catches direct-upload abuse but is silent on attackers who never try to upload. So three layers.
+
+```
+abusive traffic
+        │
+        ▼
+┌─────────────────────┐  middleware (IP)
+│ Vercel Edge         │── per-IP cap, returns 429 before any function fires
+└─────────────────────┘
+        │
+        ▼
+┌─────────────────────┐  API handler (user)
+│ /api/generate/... │── per-user cap, guards inference quota
+└─────────────────────┘
+        │
+        ▼
+┌─────────────────────┐  Edge Function (user)
+│ upload function     │── per-user cap, guards storage write capacity
+└─────────────────────┘
+```
+
+| layer                  | identity           | resource it defends        |
+| ---------------------- | ------------------ | -------------------------- |
+| Vercel edge middleware | IP                 | function invocation budget |
+| API handler            | authenticated user | Vertex AI inference quota  |
+| Edge Function          | authenticated user | storage write capacity     |
+
+All three layers use a sliding window. Sliding-window beats fixed-window because a fixed limit allows a 2N burst at the boundary between two windows; a sliding window distributes the count across the rolling interval.
+
+## Signed URLs
+
+Reads happen through signed URLs, generated server-side per request with a 15-minute TTL. There is no permanent URL anywhere in the system. The signing call itself runs with the user's JWT in scope, so it is subject to the same storage policy as a direct read; the application cannot mint a URL for a file the requesting user is not allowed to read. If a URL leaks (screen share, browser extension, accidental paste), the validity window bounds the exposure to the next refresh.
+
+## Orphan cleanup
+
+A two-phase architecture (storage write, then registration in the application database) has a well-documented failure mode. The upload function can complete the write, the registration request can drop on a flaky client, and the file is in storage with no row pointing to it. The same shape applies on every object-storage backend; AWS recommends S3 lifecycle rules for this on S3 itself.
+
+A nightly cron handles it: diff the list of files in the bucket against the rows in the matching table, delete anything older than an hour with no match.
+
+```ts
+const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+const dbPaths = new Set(
+  (await prisma.userPhoto.findMany({ select: { path: true } })).map(
+    (r) => r.path,
+  ),
+);
+for (const file of await listAllStorageFiles()) {
+  if (!dbPaths.has(file.name) && file.created_at < oneHourAgo) {
+    await supabase.storage.from("<bucket>").remove([file.name]);
+  }
+}
+```
+
+The job runs on a schedule, not in response to upload failures, because the failure mode the job exists to handle is "upload succeeded, registration didn't" and the file itself carries no signal about whether a row was eventually created.
+
+## The boundary, in one view
+
+Reads and writes hit the storage layer, where the RLS policy decides. Uploads hit the Edge Function in front of it, where EXIF stripping and per-user rate limits decide. Application code orchestrates around all of this and stays on the user's JWT for any user-owned operation. The narrow set of paths that legitimately need the service role (admin tooling, the worker, deletion) reasserts authorization at the application layer through `requireAdmin` or by being unreachable from the public API.
+
+The boundary moved out of application code the moment uploads stopped passing through it. The rest is shape.

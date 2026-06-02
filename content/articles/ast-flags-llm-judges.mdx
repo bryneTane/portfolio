@@ -1,0 +1,252 @@
+---
+title: "AST flags, LLM judges: two halves of an audit pipeline"
+description: "The audit pipeline for Lumorem is AST flags feeding an LLM. Half the work is filtering noise an off-the-shelf linter would have shipped. The other half is originating signal no linter produces."
+date: "2026-06-02"
+tags: ["ast", "llm", "static-analysis", "performances"]
+---
+
+[Lumorem](https://lumorem.com) audits a frontend repo and returns a short, ranked list of performance findings. Two stages:
+
+```
+clone repo
+  │
+  ▼
+AST stage                          ← cheap, deterministic
+  ┌────────────────────────┐
+  │ filter (gates)         │   rented linter signal, noise removed
+  │ originate (detectors)  │   custom signal, cross-file
+  └────────────────────────┘
+  → candidates
+  │
+  ▼
+LLM stage                          ← expensive, contextual
+  per-file batched review
+  per-detector prompt
+  → confirm, fix, impact score
+```
+
+Cheap before expensive: the LLM should only see candidates the AST has vouched for. Two kinds of AST work feed into "vouched for."
+
+## Half 1: filter rented signal
+
+`eslint-plugin-react-perf` fires on every inline allocation in a JSX prop. Right call for a yellow squiggle in your editor. Wrong call for a billed audit.
+
+First version: install the plugin, hand every finding to the LLM. Audit on MirrAI (~100 components): **228 candidates, 224 rejected, 4 confirmed**. 97% false positives. Every rejected candidate still costs an LLM call, and a false positive that _survives_ the LLM breaks the "ranked by user impact" pitch in the first three findings the user reads.
+
+What the plugin can't see:
+
+```tsx
+// receiver memoization
+<Button onClick={() => x()} />        // harmless if Button is plain
+<MemoButton onClick={() => x()} />    // same line, real problem
+
+// list context
+<Modal onClose={() => close()} />     // one closure, fine
+arr.map(x => <Row onClick={() => …}/>)// N closures, real
+
+// allocation size
+<X options={{a: 1}} />                // constant bytes
+<X items={[...all, ...more]} />       // could be 10k items
+
+// server components
+<Provider value={obj}>…</Provider>    // no client re-render → not a perf issue
+```
+
+A gate layer between ESLint and the LLM. Rules with no gate pass through; rules with a gate get a per-candidate yes/no.
+
+```ts
+// worker/src/eslint-bridge/gates.ts (excerpt)
+
+const reactPerfGate = (finding, analysis, ctx) => {
+  if (isUnambiguousServerComponent(finding.filePath, ctx.project, analysis)) {
+    return false;
+  }
+
+  // Inline objects/arrays carry unbounded data. Keep; let LLM read.
+  if (!FUNCTION_OR_JSX_RULES.has(finding.detectorName)) return true;
+
+  // Inline functions/JSX are structurally small. They matter only when:
+  //   (a) receiver is a Context.Provider
+  //   (b) flag is inside .map/.flatMap/etc.
+  const located = findInnermostAt(analysis.ast, finding.lineStart, col);
+  if (!located) return true; // fail open
+  const ancestors = [...located.ancestors, located.node];
+  return isContextProviderReceiver(ancestors) || isInsideListRender(ancestors);
+};
+```
+
+The Server Component check is its own thing: 7 signals from the React + Next.js docs, no LLM call, no filename heuristic.
+
+```ts
+function isUnambiguousServerComponent(relPath, project, f) {
+  if (!project.isNextProject || !project.hasAppRouter) return false;
+  if (!relPath.startsWith("app/") && !relPath.startsWith("src/app/"))
+    return false;
+  if (f.hasUseServer) return true;
+
+  const isDefinitelyClient =
+    f.hasUseClient ||
+    f.hasReactHookCall || // /^use[A-Z]/, excluding useId
+    f.hasJsxEventHandler || // /^on[A-Z]/
+    f.hasBrowserGlobal || // window/document/navigator/storage
+    f.hasClassComponent ||
+    f.hasClientOnlyImport;
+  if (isDefinitelyClient) return false;
+
+  return (
+    f.hasServerOnlyImport ||
+    f.hasNextServerImport || // next/headers, next/cookies, next/cache
+    f.defaultExportIsAsync
+  );
+}
+```
+
+Rule the gate follows: **drop with confidence, keep when in doubt**. Same MirrAI repo:
+
+|                | Before    | After       |
+| -------------- | --------- | ----------- |
+| AST candidates | 228       | 21          |
+| LLM cost       | 1x        | ~0.1x       |
+| Final report   | 4 + noise | 4, no noise |
+
+## Half 2: originate custom signal
+
+ESLint is useful for things one file can answer alone. Most useful perf findings are cross-file. First custom detector: `react_context_overconsumption`. A Context's value object grows fat over time; consumers each read a small subset; any change to any key re-renders every consumer in the subtree.
+
+```
+contexts.ts                       BookingForm.tsx
+  const BookingCtx =                const { customer } = useContext(BookingCtx)
+    createContext({                             ↑
+      customer,    ─────────────────────────────┘
+      session,
+      cart,                       OrderSummary.tsx
+      pricing,                      const { cart, pricing } = useContext(BookingCtx)
+      shipping,
+      taxes,                      ShippingStep.tsx
+      promo,                        const { shipping } = useContext(BookingCtx)
+      payment,
+    })
+
+  → 8 keys exposed, 3 consumers, avg usage ratio 0.17
+  → split into BookingCustomerCtx, BookingCartCtx, BookingShippingCtx
+```
+
+Three thresholds, all must hold:
+
+```ts
+// worker/src/technologies/react/detectors/context-overconsumption/detector.ts
+
+if (totalKeys < 5) continue; // (a) too small to split
+if (consumers.length < 3) continue; // (b) too few consumers
+if (avgRatio >= 0.5) continue; // (c) consumers use most keys
+
+// avgRatio = mean over consumers of (usedKeys ∩ exposedKeys) / totalKeys
+```
+
+The hard part is cross-file. The consumer says `useContext(BookingCtx)` in one file; the `BookingCtx = createContext({...})` lives in another, possibly behind a barrel re-export. The TypeScript compiler already does this resolution; ts-morph exposes it through `getSymbol()`/`getAliasedSymbol()`.
+
+```ts
+// worker/src/shared/project-index.ts (excerpt)
+
+const project = new Project({
+  skipAddingFilesFromTsConfig: true,
+  // Critical: without this, ts-morph follows imports into node_modules and
+  // OOMs on @types/react alone. Symbol resolution still works for files we
+  // explicitly add.
+  skipFileDependencyResolution: true,
+  skipLoadingLibFiles: true,
+  compilerOptions: { allowJs: true, jsx: 1, moduleResolution: 100 },
+});
+
+// Walk the repo ourselves; never let ts-morph see node_modules/dist/.next.
+for (const f of collectSourceFiles(workingDir)) {
+  try {
+    project.addSourceFileAtPath(f);
+  } catch {
+    /* skip unparseable */
+  }
+}
+
+// Pass 1: every createContext call, indexed by its symbol id.
+// Pass 2: every useContext call, resolve arg's symbol back to a Context.
+//         Walk the bound result for destructure + member access to get usedKeys.
+```
+
+One parse per audit, not per file. The detector then runs in milliseconds against the in-memory index. The output carries enough structure for the LLM to write a sharp fix:
+
+```jsonc
+{
+  "detectorName": "lumorem/react-context-overconsumption",
+  "filePath": "src/contexts/booking.tsx",
+  "lineStart": 14,
+  "confidence": "high",
+  "detectorMetadata": {
+    "totalKeys": 8,
+    "consumerCount": 3,
+    "avgUsageRatio": 0.167,
+    "exposedKeys": ["customer", "session", "cart", "pricing", …],
+    "consumers": [
+      { "file": "BookingForm.tsx",   "line": 22, "usedKeys": ["customer"] },
+      { "file": "OrderSummary.tsx",  "line": 40, "usedKeys": ["cart","pricing"] },
+      { "file": "ShippingStep.tsx",  "line": 18, "usedKeys": ["shipping"] }
+    ]
+  }
+}
+```
+
+Three more cross-file detectors are queued (graphql overfetch, n+1 query, duplicate graphql queries). Each one extends the same project-index shape.
+
+## The LLM glue: per-file batching, per-detector prompts
+
+Most candidates cluster by file. Sending the file content once with all of its candidates as a list, instead of once per candidate:
+
+```
+file content ────┐
+                 │   ONE prompt cache hit per file
+candidate 1 ─────┤   (anthropic prompt cache TTL = 5min, well above audit duration)
+candidate 2 ─────┼──►  Claude returns verdicts: [{idx, confirmed, fix?}, …]
+candidate N ─────┘
+```
+
+```ts
+// worker/src/shared/llm-review.ts (excerpt)
+
+const CHUNK_SIZE = 10;
+// For a file with N candidates: ceil(N/10) calls, file content cached.
+```
+
+The system prompt is per-detector, not generic. `react-perf` candidates need "is this inline allocation actually expensive?"; `react_context_overconsumption` candidates need "is splitting this context the right fix?" Same output schema, different rails.
+
+```ts
+const PROMPT_REGISTRY: Record<string, string> = {
+  [CONTEXT_OVERCONSUMPTION_DETECTOR]: CONTEXT_OVERCONSUMPTION_PROMPT,
+};
+
+function selectSystemPrompt(candidates) {
+  const first = candidates[0].detectorName;
+  const allSame = candidates.every((c) => c.detectorName === first);
+  if (!allSame) return SYSTEM_PROMPT; // mixed chunk → generic
+  return PROMPT_REGISTRY[first] ?? SYSTEM_PROMPT; // single detector → tailored
+}
+```
+
+## The plugin shape
+
+Detectors are grouped by technology. Each technology has an `appliesTo` (does this repo even use React?) and a list of detectors. The pipeline reads the manifest at startup and runs the active set.
+
+```ts
+// worker/src/technologies/react/manifest.ts
+
+export const reactManifest: TechnologyManifest = {
+  name: "react",
+  extends: [], // (inheritance e.g. nextjs → react is deferred)
+  appliesTo, // package.json has "react" dep
+  detectors: [{ name: DETECTOR_NAME, detect }],
+};
+```
+
+Adding a detector is one file. Adding a technology is a folder with a manifest. The pipeline never has to know what detectors exist.
+
+## The shared move
+
+Stock linter output is not an audit candidate set. Linters surface anything that _could_ be a problem; audits ship the things that _are_. The gap is most of the work, and it doesn't belong in the LLM prompt. Structural facts go in code, on both sides: filtering noise out of rented signal, and originating signal that wasn't there. The LLM is for the meaning the AST can't reason about.

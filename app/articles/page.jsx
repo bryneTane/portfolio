@@ -59,83 +59,104 @@ export default function ArticlesIndexPage() {
                 gap: "20px",
               }}
             >
-              {articles.map((a) => (
-                <li key={a.slug}>
-                  <Link
-                    href={`/articles/${a.slug}`}
-                    className="terminal-block"
-                    style={{
-                      display: "block",
-                      textDecoration: "none",
-                      color: "inherit",
-                    }}
-                  >
-                    <div
+              {articles.map((a) => {
+                const isExplainer = a.tags?.includes("explainer");
+                const visibleTags =
+                  a.tags?.filter((t) => t !== "explainer") ?? [];
+                return (
+                  <li key={a.slug}>
+                    <Link
+                      href={`/articles/${a.slug}`}
+                      className={
+                        isExplainer ? "article-card-explainer" : "terminal-block"
+                      }
                       style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "baseline",
-                        gap: "16px",
-                        marginBottom: "8px",
+                        display: "block",
+                        textDecoration: "none",
+                        color: "inherit",
                       }}
                     >
-                      <h2
-                        style={{
-                          color: "var(--term-orange)",
-                          fontSize: "18px",
-                          margin: 0,
-                        }}
-                      >
-                        {a.title}
-                      </h2>
-                      {a.date && (
-                        <time
-                          dateTime={a.date}
-                          style={{
-                            color: "var(--term-text-dim)",
-                            fontSize: "12px",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          {formatDate(a.date)}
-                        </time>
+                      {isExplainer && (
+                        <div className="article-card-badge">Explainer</div>
                       )}
-                    </div>
-                    {a.description && (
-                      <p
-                        style={{
-                          color: "var(--term-text)",
-                          fontSize: "13px",
-                          lineHeight: 1.6,
-                          margin: 0,
-                        }}
-                      >
-                        {a.description}
-                      </p>
-                    )}
-                    {a.tags?.length > 0 && (
                       <div
                         style={{
                           display: "flex",
-                          flexWrap: "wrap",
-                          gap: "6px",
-                          marginTop: "12px",
+                          justifyContent: "space-between",
+                          alignItems: "baseline",
+                          gap: "16px",
+                          marginBottom: "8px",
                         }}
                       >
-                        {a.tags.map((t) => (
-                          <span
-                            key={t}
-                            className="tag"
-                            style={{ fontSize: "10px", padding: "3px 8px" }}
+                        <h2
+                          style={{
+                            color: isExplainer
+                              ? "var(--fa-text)"
+                              : "var(--term-orange)",
+                            fontSize: "18px",
+                            margin: 0,
+                            minWidth: 0,
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          {a.title}
+                        </h2>
+                        {a.date && (
+                          <time
+                            dateTime={a.date}
+                            style={{
+                              color: isExplainer
+                                ? "var(--fa-dim)"
+                                : "var(--term-text-dim)",
+                              fontSize: "12px",
+                              whiteSpace: "nowrap",
+                            }}
                           >
-                            {t}
-                          </span>
-                        ))}
+                            {formatDate(a.date)}
+                          </time>
+                        )}
                       </div>
-                    )}
-                  </Link>
-                </li>
-              ))}
+                      {a.description && (
+                        <p
+                          style={{
+                            color: isExplainer
+                              ? "var(--fa-text)"
+                              : "var(--term-text)",
+                            opacity: isExplainer ? 0.85 : 1,
+                            fontSize: "13px",
+                            lineHeight: 1.6,
+                            margin: 0,
+                          }}
+                        >
+                          {a.description}
+                        </p>
+                      )}
+                      {visibleTags.length > 0 && (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "6px",
+                            marginTop: "12px",
+                          }}
+                        >
+                          {visibleTags.map((t) => (
+                            <span
+                              key={t}
+                              className={
+                                isExplainer ? "article-card-tag-fa" : "tag"
+                              }
+                              style={{ fontSize: "10px", padding: "3px 8px" }}
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>

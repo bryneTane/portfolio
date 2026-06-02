@@ -34,6 +34,26 @@
   --term-bg: #000000;
   --term-bg-alt: #0a0a0a;
   --term-border: #1a1a1a;
+
+  /* Friendly-article visuals (used in non-technical explainers).
+     Warm sepia palette, deliberately off the terminal aesthetic. */
+  --fa-bg: #1f1812;
+  --fa-card-inner-bg: #2a2018;
+  --fa-text: #f5ead8;
+  --fa-dim: #a59986;
+  --fa-strike: #7a6448;
+  --fa-border: #7a6448;
+  --fa-dashed: #7a6448;
+  --fa-accent: #fb923c;
+  --fa-info: #60a5fa;
+  --fa-bad-bg: #2a1614;
+  --fa-bad-border: #f87171;
+  --fa-bad-text: #fca5a5;
+  --fa-good-bg: #142b1c;
+  --fa-good-border: #4ade80;
+  --fa-good-text: #86efac;
+  --fa-pill-bg: #f5ead8;
+  --fa-pill-text: #1f1812;
 }
 
 [data-theme="light"] {
@@ -44,6 +64,26 @@
   --term-text: #1a1a1a;
   --term-text-dim: #666666;
   --term-prompt: #f68b48;
+
+  /* Friendly-article visuals (used in non-technical explainers).
+     Warm editorial palette: cream cards, navy text, orange accents. */
+  --fa-bg: #fefcf6;
+  --fa-card-inner-bg: #ffffff;
+  --fa-text: #1a1f3a;
+  --fa-dim: #6b7280;
+  --fa-strike: #9ca3af;
+  --fa-border: #1a1f3a;
+  --fa-dashed: #cbb89a;
+  --fa-accent: #ea580c;
+  --fa-info: #2563eb;
+  --fa-bad-bg: #fff7f6;
+  --fa-bad-border: #b91c1c;
+  --fa-bad-text: #b91c1c;
+  --fa-good-bg: #f5fdf7;
+  --fa-good-border: #15803d;
+  --fa-good-text: #15803d;
+  --fa-pill-bg: #1a1f3a;
+  --fa-pill-text: #ffffff;
 }
 
 /* Base Typography - ONLY JetBrains Mono */
@@ -883,6 +923,17 @@ pre {
   margin: 0 0 20px;
 }
 
+/* MDX wraps loose text inside JSX block elements in <p>. The universal
+   `* { color: var(--term-text) }` rule (top of file) would then force
+   those auto-generated <p> tags to the terminal text colour and ignore
+   the parent card's inline color. Reset to inherit so styled visuals
+   keep their own palette, and drop the default paragraph margin so the
+   text sits flush inside the card. */
+.article-prose div > p {
+  color: inherit;
+  margin: 0;
+}
+
 .article-prose a {
   color: var(--term-orange);
   text-decoration: underline;
@@ -1090,3 +1141,42 @@ pre {
   color: var(--term-orange);
   white-space: nowrap;
 }
+
+/* Articles list - explainer card (editorial palette) */
+.article-card-explainer {
+  background: var(--fa-bg);
+  border: 1px solid var(--fa-border);
+  padding: 20px;
+  position: relative;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.article-card-badge {
+  display: inline-block;
+  background: var(--fa-pill-bg);
+  color: var(--fa-pill-text);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  margin-bottom: 14px;
+  font-weight: 700;
+}
+
+.article-card-tag-fa {
+  display: inline-block;
+  padding: 3px 8px;
+  background: transparent;
+  border: 1px solid var(--fa-dashed);
+  color: var(--fa-text);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.article-card-tag-fa:hover {
+  background: var(--fa-text);
+  color: var(--fa-bg);
+}
+

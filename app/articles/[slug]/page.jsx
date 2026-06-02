@@ -146,6 +146,11 @@ export default async function ArticlePage({ params }) {
               source={article.content}
               components={mdxComponents}
               options={{
+                // Personal blog: every article is authored by me, so the
+                // default `blockJS: true` (which strips JSX attribute
+                // expressions like `style={{...}}`) is unnecessary
+                // hardening. Disabling it lets inline JSX visuals render.
+                blockJS: false,
                 mdxOptions: {
                   remarkPlugins: [remarkGfm],
                   rehypePlugins: [
