@@ -1,6 +1,5 @@
 import { getAllArticles } from "../src/lib/articles";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://friedrichtane.com";
+import { SITE_URL } from "../src/lib/site-config";
 
 export default function sitemap() {
   const articles = getAllArticles().map((a) => ({

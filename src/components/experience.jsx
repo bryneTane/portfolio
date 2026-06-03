@@ -113,16 +113,24 @@ export default function Experience() {
                     style={{
                       display: "flex",
                       alignItems: "center",
+                      justifyContent: "center",
                       padding: "12px",
                       background: "var(--term-bg-alt)",
                       border: "1px solid var(--term-border)",
                       flexShrink: 0,
+                      width: 120,
+                      height: 72,
                     }}
                   >
                     <img
                       src={exp.logo}
                       alt={exp.company}
-                      style={{ height: "40px", display: "block" }}
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                        objectFit: "contain",
+                        display: "block",
+                      }}
                     />
                   </div>
                   <div style={{ flex: 1, minWidth: "200px" }}>

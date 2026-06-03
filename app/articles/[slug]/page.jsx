@@ -19,7 +19,11 @@ const mdxComponents = {
   ),
 };
 import Header from "../../../src/components/header";
-import { getAllArticleSlugs, getArticleBySlug } from "../../../src/lib/articles";
+import {
+  getAllArticleSlugs,
+  getArticleBySlug,
+} from "../../../src/lib/articles";
+import { SITE_URL, name as authorName } from "../../../src/lib/site-config";
 
 export const dynamicParams = false;
 
@@ -32,25 +36,31 @@ export async function generateMetadata({ params }) {
   const article = getArticleBySlug(slug);
   if (!article) return {};
   const url = `/articles/${article.slug}`;
+  const og = {
+    type: "article",
+    title: article.title,
+    description: article.description,
+    url,
+    publishedTime: article.date ?? undefined,
+    tags: article.tags,
+  };
+  const tw = {
+    card: "summary_large_image",
+    title: article.title,
+    description: article.description,
+  };
+  // Only set images explicitly when a manual cover is provided; otherwise
+  // let Next auto-inject the per-route opengraph-image.jsx output.
+  if (article.cover) {
+    og.images = [{ url: article.cover }];
+    tw.images = [article.cover];
+  }
   return {
     title: article.title,
     description: article.description,
     alternates: { canonical: url },
-    openGraph: {
-      type: "article",
-      title: article.title,
-      description: article.description,
-      url,
-      publishedTime: article.date ?? undefined,
-      tags: article.tags,
-      images: article.cover ? [{ url: article.cover }] : undefined,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: article.title,
-      description: article.description,
-      images: article.cover ? [article.cover] : undefined,
-    },
+    openGraph: og,
+    twitter: tw,
   };
 }
 
@@ -68,15 +78,48 @@ export default async function ArticlePage({ params }) {
   const article = getArticleBySlug(slug);
   if (!article) notFound();
 
+  const articleUrl = `${SITE_URL}/articles/${slug}`;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: article.title,
     description: article.description,
     datePublished: article.date ?? undefined,
-    author: { "@type": "Person", name: "Friedrich Tane" },
+    author: {
+      "@type": "Person",
+      name: authorName,
+      url: SITE_URL,
+    },
+    publisher: {
+      "@type": "Person",
+      name: authorName,
+      url: SITE_URL,
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": articleUrl },
     keywords: article.tags?.join(", "),
-    image: article.cover ?? undefined,
+    image: article.cover ? article.cover : `${articleUrl}/opengraph-image`,
+    inLanguage: "en",
+  };
+
+  const breadcrumbsJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Articles",
+        item: `${SITE_URL}/articles`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: article.title,
+        item: articleUrl,
+      },
+    ],
   };
 
   return (
@@ -89,6 +132,12 @@ export default async function ArticlePage({ params }) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(breadcrumbsJsonLd),
+          }}
         />
         <div className="container" style={{ maxWidth: "760px" }}>
           <div style={{ marginBottom: "24px" }}>

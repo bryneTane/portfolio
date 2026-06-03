@@ -1,44 +1,41 @@
 import "../src/index.css";
 import "../src/App.css";
 import { ThemeProvider } from "../src/context/ThemeContext";
+import {
+  SITE_URL,
+  name,
+  shortBio,
+  tagline,
+  siteTitle,
+  keywords,
+} from "../src/lib/site-config";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://friedrichtane.com";
+const description = `${shortBio} ${tagline}`;
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Friedrich Tane | Full Stack Software Engineer",
-    template: "%s | Friedrich Tane",
+    default: siteTitle,
+    template: `%s | ${name}`,
   },
-  description:
-    "Friedrich Tane is a full stack software engineer based in Paris. Portfolio, projects, and articles on web engineering, architecture, and shipping products.",
-  keywords: [
-    "Friedrich Tane",
-    "Software Engineer",
-    "Full Stack",
-    "React",
-    "Node.js",
-    "TypeScript",
-    "Paris",
-    "Portfolio",
-  ],
-  authors: [{ name: "Friedrich Tane" }],
-  creator: "Friedrich Tane",
+  description,
+  keywords,
+  authors: [{ name }],
+  creator: name,
   openGraph: {
     type: "website",
     url: SITE_URL,
-    siteName: "Friedrich Tane",
-    title: "Friedrich Tane | Full Stack Software Engineer",
-    description:
-      "Portfolio, projects, and articles on web engineering, architecture, and shipping products.",
-    images: [{ url: "/ft.jpg", width: 1200, height: 630, alt: "Friedrich Tane" }],
+    siteName: name,
+    locale: "en_US",
+    title: siteTitle,
+    description: tagline,
+    // OG image generated at build time by app/opengraph-image.jsx,
+    // overridden per-route by app/<route>/opengraph-image.jsx.
   },
   twitter: {
     card: "summary_large_image",
-    title: "Friedrich Tane | Full Stack Software Engineer",
-    description:
-      "Portfolio, projects, and articles on web engineering, architecture, and shipping products.",
-    images: ["/ft.jpg"],
+    title: siteTitle,
+    description: tagline,
   },
   icons: {
     icon: "/favicon.ico",
