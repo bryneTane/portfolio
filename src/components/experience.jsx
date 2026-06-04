@@ -14,7 +14,7 @@ const experiences = [
       "Set up the team's monitoring and alerting process (Datadog dashboard + dedicated Slack channel) so regressions get caught and paged.",
       "Authored cross-service design analyses (service-override payment, preset menus on overrides) and led the decommissioning of the legacy lafourchette-core PHP dependency inside messaging-worker.",
       "Shipped reservation features (first visit, grouped reservations, smart cancellation, no-show flow), preset menus management, mobile-app extensions (click-to-call, contextual menu, simplified-Chinese locale), and a FullCalendar-based calendar revamp.",
-      "Innovation week: prototyped a no-show prediction AI and Ask-TFM MCP. Upgraded the QA stack to Playwright + Allure v3 with a preconditions API.",
+      "Innovation week: prototyped a no-show prediction AI for restaurants. Prototyped a TheFork-made phone hardware with Asterisk to improve reservations management",
     ],
     skills: [
       "TypeScript",

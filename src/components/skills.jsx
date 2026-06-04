@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React from "react";
 
@@ -55,11 +55,7 @@ const skills = [
   },
   {
     name: "Laravel",
-    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-plain.svg",
-  },
-  {
-    name: "Spring",
-    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg",
+    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg",
   },
 
   // Databases
@@ -70,10 +66,6 @@ const skills = [
   {
     name: "MongoDB",
     logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg",
-  },
-  {
-    name: "MySQL",
-    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg",
   },
   {
     name: "Oracle DB",
@@ -88,29 +80,45 @@ const skills = [
 
   // DevOps & Cloud
   {
-    name: "Docker",
-    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg",
-  },
-  {
     name: "AWS",
     logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg",
+  },
+  {
+    name: "GCP",
+    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg",
   },
   {
     name: "Terraform",
     logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/terraform/terraform-original.svg",
   },
-
-  // Version Control & Build Tools
   {
-    name: "Git",
-    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg",
+    name: "Datadog",
+    logo: "https://cdn.simpleicons.org/datadog",
   },
   {
-    name: "Maven",
-    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/maven/maven-original.svg",
+    name: "Sentry",
+    logo: "https://cdn.simpleicons.org/sentry",
+  },
+
+  // AI / LLM
+  {
+    name: "Claude API",
+    logo: "https://cdn.simpleicons.org/anthropic",
+  },
+  {
+    name: "LangGraph",
+    logo: "https://cdn.simpleicons.org/langchain",
+  },
+  {
+    name: "Replicate",
+    logo: "https://cdn.simpleicons.org/replicate",
   },
 
   // Mobile Development
+  {
+    name: "React Native",
+    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+  },
   {
     name: "Flutter",
     logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg",
@@ -120,13 +128,11 @@ const skills = [
     logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/android/android-original.svg",
   },
 
-  // Testing
-  {
-    name: "Jest",
-    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jest/jest-plain.svg",
-  },
-
   // Backend as a Service
+  {
+    name: "Supabase",
+    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/supabase/supabase-original.svg",
+  },
   {
     name: "Firebase",
     logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg",
@@ -137,8 +143,60 @@ const skills = [
     name: "Linux",
     logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg",
   },
+];
 
-  // Design Tools
+const tools = [
+  {
+    name: "Docker",
+    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg",
+  },
+  {
+    name: "Git",
+    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg",
+  },
+  {
+    name: "Jenkins",
+    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jenkins/jenkins-original.svg",
+  },
+  {
+    name: "Jest",
+    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jest/jest-plain.svg",
+  },
+  {
+    name: "Cypress",
+    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cypressio/cypressio-original.svg",
+  },
+  {
+    name: "Expo",
+    logo: "https://cdn.simpleicons.org/expo",
+  },
+  {
+    name: "Puppeteer",
+    logo: "https://cdn.simpleicons.org/puppeteer",
+  },
+  {
+    name: "Serverless",
+    logo: "https://cdn.simpleicons.org/serverless",
+  },
+];
+
+const additionalTools = [
+  {
+    name: "Power Automate (MS Flow)",
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/microsoft-power-automate.svg",
+  },
+  {
+    name: "Make",
+    logo: "https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/make-color.svg",
+  },
+  {
+    name: "Zapier",
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/zapier.svg",
+  },
+  {
+    name: "Adobe Premiere",
+    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/premierepro/premierepro-original.svg",
+  },
   {
     name: "Figma",
     logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
@@ -172,7 +230,28 @@ export default function Skills() {
           ))}
         </div>
 
-        {/* Additional Tools */}
+        {/* Tools (dev) - same card style as main skills */}
+        <div style={{ marginTop: "40px" }}>
+          <div className="prompt" style={{ marginBottom: "12px" }}>
+            tools
+          </div>
+          <div className="grid-4">
+            {tools.map((tool) => (
+              <div key={tool.name} className="skill-card">
+                <img
+                  src={tool.logo}
+                  alt={tool.name}
+                  onError={(e) => {
+                    e.target.style.display = "none";
+                  }}
+                />
+                <span>{tool.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Additional Tools (non-dev) */}
         <div style={{ marginTop: "40px" }}>
           <div className="prompt">additional tools</div>
           <div
@@ -183,15 +262,31 @@ export default function Skills() {
               marginTop: "12px",
             }}
           >
-            {[
-              "Puppeteer",
-              "Serverless",
-              "Hibernate",
-              "MS Flow",
-              "Adobe Premiere",
-            ].map((tool) => (
-              <span key={tool} className="tag">
-                {tool}
+            {additionalTools.map((tool) => (
+              <span
+                key={tool.name}
+                className="tag"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                {tool.logo && (
+                  <img
+                    src={tool.logo}
+                    alt=""
+                    style={{
+                      width: 14,
+                      height: 14,
+                      objectFit: "contain",
+                    }}
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                    }}
+                  />
+                )}
+                {tool.name}
               </span>
             ))}
           </div>

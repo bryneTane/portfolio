@@ -36,7 +36,7 @@ const projects = [
     description:
       "Visualize outfits from your wardrobe before you wear them. Mix pieces from your closet with items spotted online, on your own body, in seconds.",
     longDescription:
-      "MirrAI turns your closet into a canvas. Users photograph clothes they own, drop in items spotted online, and see complete outfits on their own body before wearing them. Built around the daily 'what should I wear today' question rather than the occasional 'should I buy this'. Auto-detects clothing type to pick the right base photo automatically. Powered by IDM-VTON for photorealistic results in 15 to 25 seconds, on a Next.js + Supabase + Cloud Run stack. Long-running generation uses Vercel after() with Supabase Realtime so progress survives flaky mobile connections.",
+      "MirrAI turns your closet into a canvas. Users photograph clothes they own, drop in items spotted online, and see complete outfits on their own body without wearing them. Built around the daily 'what should I wear today' question rather than the occasional 'should I buy this'. Auto-detects clothing type to pick the right base photo automatically. Powered by Google Vertex AI for photorealistic results in 15 to 25 seconds, on a Next.js + Supabase + Cloud Run stack.",
     tech: [
       "Next.js",
       "TypeScript",
