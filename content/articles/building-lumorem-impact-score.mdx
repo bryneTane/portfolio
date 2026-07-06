@@ -1,0 +1,137 @@
+---
+title: "Building Lumorem's impact score"
+description: "Lumorem ranks performance findings by user impact. The scoring formula started from the numbers that circulate about web performance. Tracing them to their sources reshaped it."
+date: '2026-07-06'
+tags: ['performances', 'research', 'lumorem']
+---
+
+[Lumorem](https://lumorem.com) audits a repo and ranks the findings by user impact instead of technical severity. The ranking needs a score. Researching how to weight it, I collected the numbers that come up everywhere the topic is discussed and drafted a first formula on them:
+
+```
+business_impact_score = (degradation_ms × frequency_per_user_day × frustration_multiplier)
+                        ÷ estimated_effort_hours
+```
+
+Before shipping constants I couldn't defend, I challenged them: for each number, I went looking for the primary source and the research behind it. The most famous ones didn't make it. "A 100ms delay costs 7% of conversions", "a 2s delay increases bounce by 103%", "53% of mobile users abandon after 3s": I couldn't verify any of them, so they're not in the formula. What follows is the current score, piece by piece, with what each piece stands on.
+
+## The severity curve follows perceptual cliffs
+
+The first draft scored latency linearly, every millisecond worth the same. Perception doesn't work that way. Nielsen's response-time limits put the boundaries at ~0.1s (feels instant), ~1s (flow of thought holds) and ~10s (task abandoned); the limits date from early HCI work, but they measure human perception rather than browsers, and Google re-encoded them into today's [Core Web Vitals thresholds](https://web.dev/articles/defining-core-web-vitals-thresholds) at p75 (LCP 2.5s, INP 200ms).
+
+The score is now piecewise on those cliffs, and each score carries the threshold that produced it:
+
+```ts
+// worker/src/shared/scoring.ts (excerpt)
+case 'INPUT_RESPONSE': {
+  if (latencyMs <= 100)
+    return { score: 0, tier: 'GOOD', thresholdCited: 'RAIL 100ms feels-instant' }
+  if (latencyMs <= 200)
+    return { score: (latencyMs - 100) / 100, tier: 'NEEDS_IMPROVEMENT',
+             thresholdCited: 'INP 200ms (CWV needs-improvement at p75)' }
+  return { score: 1 + Math.log2(latencyMs / 200), tier: 'POOR',
+           thresholdCited: 'INP >200ms (CWV poor)' }
+}
+```
+
+A 50ms cut from 90ms to 40ms scores zero. The same 50ms from 220ms to 170ms crosses a boundary users feel, and scores accordingly.
+
+## The context multiplier
+
+[Milliseconds Make Millions](https://web.dev/case-studies/milliseconds-make-millions) (Google/Deloitte, 2020, 37 brands and ~30M sessions) measured what a single 0.1s improvement produced in different contexts: +8.4% retail conversions, +10.1% in travel, +40.1% on luxury product-to-basket progression. A twenty-fold spread from the same milliseconds. The study is observational and Google-commissioned, so I use it for relative weights between contexts and nothing more.
+
+My first formula compressed all of that into one `frustration_multiplier`. It also inherited the study's axis, the purchase funnel, and [MirrAI](https://mirraitryon.com) has no checkout funnel. Neither does a restaurant tool a waiter uses mid-service. The axis that generalizes is how central the action is to the product's job:
+
+```ts
+// worker/src/shared/scoring.ts (excerpt)
+const criticalityMultiplier: Record<Criticality, number> = {
+  CORE: 5.0,       // the product's main job: generate try-on, take an order, checkout
+  SUPPORTING: 2.0, // gets you there: search, catalog, config
+  PERIPHERAL: 1.0, // off the path: settings, admin, marketing
+}
+const valueMultiplier: Record<ServiceValue, number> = {
+  LOW: 0.5,
+  MEDIUM: 1.0,
+  HIGH: 2.0,
+}
+const value = criticalityMultiplier[args.criticality] * valueMultiplier[args.serviceValue]
+```
+
+Checkout being latency-critical is the special case where "end of funnel" and CORE coincide.
+
+## Two remediation tracks per finding
+
+A question I had been hand-waving: when is a loading skeleton a legitimate recommendation, and when is it a dodge? Maister's [The Psychology of Waiting Lines](https://www.columbia.edu/~ww2040/4615S13/Psychology_of_Waiting_Lines.pdf) gives it structure (1985, written about service queues; Buell & Norton tested the propositions on websites in 2011 and found users rated a travel search higher when it showed the work being done, sometimes preferring the slower version, in what they named [the labor illusion](https://pubsonline.informs.org/doi/10.1287/mnsc.1110.1376)). Occupied waits feel shorter, unexplained ones feel longer, and tolerance scales with the value of what you're waiting for.
+
+Each finding now carries up to two remediation tracks. It shows in the output schema the reviewer must fill:
+
+```ts
+// worker/src/shared/llm-review.ts (excerpt)
+const FixSchema = z.object({
+  title: z.string().min(10).max(120),
+  degradation_ms: z.number().min(0),
+  code_remediation: CodeRemediationSchema.nullable(),
+  perceived_perf_mitigation: PerceivedPerfMitigationSchema.nullable(),
+  ineligibility_reasons: z.array(z.string()),
+  recommendation: z.enum(['CODE_ONLY', 'MITIGATION_ONLY', 'PREFER_CODE', 'PREFER_MITIGATION']),
+  recommendation_rationale: z.string().min(20),
+})
+```
+
+The mitigation track has to pass conditions the reviewer applies explicitly:
+
+```
+mitigation is ELIGIBLE when ALL of:
+  wait is before/during the work        (post-process waits can't be masked)
+  user not under external time pressure
+  action worth waiting for              (service value ≥ medium)
+  latency under the abandonment cliff
+```
+
+Same 2.4s delay, two verdicts. On MirrAI's try-on flow, a progress indicator passes. On an order-entry screen during dinner service it fails, and the report recommends the code fix only, citing the condition that failed.
+
+## A carryover multiplier for professional tools
+
+A CHI 2025 study ([Bogon et al.](https://dl.acm.org/doi/10.1145/3706598.3713475)) measured users slowing their own actions by ~80ms after experiencing delayed feedback. On a tool someone uses hundreds of times a day, a delay taxes the interactions that follow it. Findings on professional repeat-use surfaces get amplified:
+
+```ts
+// worker/src/shared/scoring.ts (excerpt)
+export function carryoverFactor(userContext: UserContext): CarryoverFactor {
+  switch (userContext) {
+    case 'CASUAL_CONSUMER':
+      return { value: 1.0, basisCited: 'baseline (no carryover)' }
+    case 'PROFESSIONAL_REPEAT_USE':
+      return { value: 1.3, basisCited: 'Bogon CHI 2025, anticipatory slowdown on repeated tasks' }
+    case 'TIME_CRITICAL_OPERATIONS':
+      return { value: 1.5, basisCited: 'Bogon CHI 2025 + Maister Prop 7' }
+  }
+}
+```
+
+Assembled, the pieces multiply into a numerator and effort divides it:
+
+```ts
+const baseNumerator =
+  severity.score * elasticity.value * args.frequencyPerUserDay * carryover.value
+const codeFixScore = baseNumerator / Math.max(MIN_EFFORT_HOURS, args.codeRemediationHours)
+```
+
+## Sources
+
+| Source | What it grounds in the score |
+| --- | --- |
+| [Nielsen, response-time limits](https://www.nngroup.com/articles/response-times-3-important-limits/) | The 0.1s / 1s / 10s cliffs |
+| [Google RAIL / Core Web Vitals](https://web.dev/articles/defining-core-web-vitals-thresholds) | Threshold values at p75 |
+| [Milliseconds Make Millions](https://web.dev/case-studies/milliseconds-make-millions) | Relative context weights |
+| [Maister, The Psychology of Waiting Lines](https://www.columbia.edu/~ww2040/4615S13/Psychology_of_Waiting_Lines.pdf) | Mitigation eligibility conditions |
+| [Buell & Norton, the labor illusion](https://pubsonline.informs.org/doi/10.1287/mnsc.1110.1376) | Experimental confirmation of visible-work effects |
+| [Bogon et al., CHI 2025](https://dl.acm.org/doi/10.1145/3706598.3713475) | Carryover multiplier for repeat-use tools |
+
+## Still open
+
+- The curve between cliffs isn't established in the literature. Linear then log within tiers, until my own telemetry says otherwise.
+- Layout shift has no millisecond cost. CLS findings rank by tier only for now.
+- The 0.5 discount between a mitigation's score and a code fix's score is a placeholder until adoption data exists.
+
+## The part I keep
+
+Every constant in the score now points at something I can show: a threshold with its citation, or a measured effect with its caveats attached. The numbers I couldn't verify aren't in it.
