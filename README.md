@@ -53,7 +53,15 @@ draft: false
 Markdown body with optional JSX...
 ```
 
-The article appears automatically on `/articles` and `/articles/<slug>`, and is included in the sitemap. Set `draft: true` to keep it out of the index and sitemap.
+The article appears automatically on `/articles` and `/articles/<slug>`, and is included in the sitemap.
+
+**Drafts.** Set `draft: true` in the frontmatter to hide an article from production:
+
+- Excluded from the `/articles` list, the "latest articles" widget on the home page, and the sitemap.
+- Excluded from `generateStaticParams`, so no HTML gets built for it and the direct URL `/articles/<slug>` returns 404.
+- Still visible in `npm run dev`, where drafts are included by default so you can preview them locally before flipping the flag.
+
+Flip `draft: true` → `draft: false` (or remove the field) and redeploy to publish.
 
 ## Deployment
 

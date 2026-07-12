@@ -252,6 +252,20 @@ export default function Start({ latestArticles = [] }) {
                           flex: 1,
                         }}
                       >
+                        {article.draft && (
+                          <span
+                            style={{
+                              color: "var(--term-red)",
+                              fontSize: "10px",
+                              fontWeight: 700,
+                              letterSpacing: "0.1em",
+                              marginRight: "8px",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            [draft]
+                          </span>
+                        )}
                         {article.title}
                       </span>
                       {article.date && (

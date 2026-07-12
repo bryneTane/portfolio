@@ -1164,6 +1164,19 @@ pre {
   font-weight: 700;
 }
 
+/* DRAFT badge - shown only on unpublished articles (dev only) */
+.article-draft-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--term-red);
+  border: 1px solid var(--term-red);
+  background: transparent;
+}
+
 .article-card-tag-fa {
   display: inline-block;
   padding: 3px 8px;

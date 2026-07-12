@@ -20,7 +20,7 @@ const mdxComponents = {
 };
 import Header from "../../../src/components/header";
 import {
-  getAllArticleSlugs,
+  getPublishedArticleSlugs,
   getArticleBySlug,
 } from "../../../src/lib/articles";
 import { SITE_URL, name as authorName } from "../../../src/lib/site-config";
@@ -28,7 +28,7 @@ import { SITE_URL, name as authorName } from "../../../src/lib/site-config";
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return getAllArticleSlugs().map((slug) => ({ slug }));
+  return getPublishedArticleSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }) {
@@ -154,6 +154,11 @@ export default async function ArticlePage({ params }) {
           </div>
 
           <header style={{ marginBottom: "40px" }}>
+            {article.draft && (
+              <div style={{ marginBottom: "16px" }}>
+                <span className="article-draft-badge">Draft (dev only)</span>
+              </div>
+            )}
             <h1
               style={{
                 color: "var(--term-orange)",

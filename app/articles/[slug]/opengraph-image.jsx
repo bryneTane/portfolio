@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import {
-  getAllArticleSlugs,
+  getPublishedArticleSlugs,
   getArticleBySlug,
 } from "../../../src/lib/articles";
 import {
@@ -15,7 +15,7 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export function generateStaticParams() {
-  return getAllArticleSlugs().map((slug) => ({ slug }));
+  return getPublishedArticleSlugs().map((slug) => ({ slug }));
 }
 
 const TECH = {

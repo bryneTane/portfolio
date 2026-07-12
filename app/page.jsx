@@ -48,7 +48,7 @@ const websiteJsonLd = {
 export default function HomePage() {
   const latestArticles = getAllArticles()
     .slice(0, 3)
-    .map(({ slug, title, date }) => ({ slug, title, date }));
+    .map(({ slug, title, date, draft }) => ({ slug, title, date, draft }));
 
   return (
     <div className="App">

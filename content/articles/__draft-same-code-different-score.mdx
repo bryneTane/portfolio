@@ -1,16 +1,17 @@
 ---
-title: 'Same code, different score: making LLM judgment reproducible'
-description: 'Lumorem uses an LLM to judge performance findings. Two audits of identical code returned different scores, and one finding silently vanished. Where the nondeterminism was hiding and what pinned it down.'
-date: '2026-07-06'
-tags: ['llm', 'reliability', 'static-analysis', 'lumorem']
+title: "Same code, different score: making LLM judgment reproducible"
+description: "Lumorem uses an LLM to judge performance findings. Two audits of identical code returned different scores, and one finding silently vanished. Where the nondeterminism was hiding and what pinned it down."
+date: "2026-07-06"
+tags: ["llm", "reliability", "static-analysis", "lumorem"]
+draft: true
 ---
 
 [Lumorem](https://lumorem.com) audits a repo and returns performance findings ranked by user impact. The ranking is the product. So this, from two audits of the exact same commit, is a bug report against the whole idea:
 
-| Audit | Finding | Severity | Score |
-| --- | --- | --- | --- |
-| July 1 | Sequential upserts in admin PATCH (N+1) | P1 | 1.3 |
-| July 4 | Sequential upserts in admin PATCH (N+1) | P2 | **0** |
+| Audit  | Finding                                 | Severity | Score |
+| ------ | --------------------------------------- | -------- | ----- |
+| July 1 | Sequential upserts in admin PATCH (N+1) | P1       | 1.3   |
+| July 4 | Sequential upserts in admin PATCH (N+1) | P2       | **0** |
 
 Same file, same code, same detector. Three separate sources of drift, all in the same place:
 
@@ -36,8 +37,8 @@ Fix: the first classification is persisted and pinned. Later audits receive it a
 
 ```ts
 // pipeline.ts: all known routes are pinned, team-set AND previously-inferred
-const knownRoutes = await prisma.route.findMany({ where: { serviceId } })
-for (const r of knownRoutes) pinnedRoutesByPath.set(r.filePath, toSignals(r))
+const knownRoutes = await prisma.route.findMany({ where: { serviceId } });
+for (const r of knownRoutes) pinnedRoutesByPath.set(r.filePath, toSignals(r));
 // inferred rows are created once, never refreshed.
 // "Reset" deletes the row; the next audit re-infers.
 ```

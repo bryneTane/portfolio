@@ -76,8 +76,27 @@ export default function ArticlesIndexPage() {
                         color: "inherit",
                       }}
                     >
-                      {isExplainer && (
-                        <div className="article-card-badge">Explainer</div>
+                      {(a.draft || isExplainer) && (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "8px",
+                            marginBottom: "14px",
+                          }}
+                        >
+                          {a.draft && (
+                            <span className="article-draft-badge">Draft</span>
+                          )}
+                          {isExplainer && (
+                            <span
+                              className="article-card-badge"
+                              style={{ marginBottom: 0 }}
+                            >
+                              Explainer
+                            </span>
+                          )}
+                        </div>
                       )}
                       <div
                         style={{
