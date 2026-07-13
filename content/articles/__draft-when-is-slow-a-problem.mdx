@@ -1,0 +1,749 @@
+---
+title: "When is a slow app actually a problem?"
+description: "Some waits go unnoticed, others make you close the app. What research says about how we experience waiting, with no technical background needed."
+date: "2026-07-13"
+tags: ["performances", "ux", "explainer", "lumorem"]
+draft: true
+---
+
+I build [Lumorem](https://lumorem.com), a tool that finds what makes apps slow and sorts it by how much it hurts the people using them. Sorting like that meant digging into the research on how humans experience waiting. What it says is simple, and it explains a lot of everyday life with a phone.
+
+## Your brain has speed limits
+
+A wait doesn't hurt in proportion to its length. It hurts when it crosses one of three lines that [research](https://www.nngroup.com/articles/response-times-3-important-limits/) keeps finding, decade after decade:
+
+<div
+  style={{
+    background: "var(--fa-bg)",
+    border: "1.5px solid var(--fa-border)",
+    borderRadius: "12px",
+    padding: "1.5rem",
+    margin: "1.5rem 0",
+    color: "var(--fa-text)",
+  }}
+>
+  <div style={{ display: "flex", height: "16px" }}>
+    <div
+      style={{
+        flex: 1,
+        background: "var(--fa-good-border)",
+        borderRadius: "999px 0 0 999px",
+      }}
+    />
+    <div style={{ flex: 1.1, background: "var(--fa-accent)" }} />
+    <div
+      style={{
+        flex: 1.5,
+        background: "var(--fa-bad-border)",
+        opacity: 0.55,
+      }}
+    />
+    <div
+      style={{
+        flex: 1.2,
+        background: "var(--fa-bad-border)",
+        borderRadius: "0 999px 999px 0",
+      }}
+    />
+  </div>
+  <div style={{ display: "flex", marginTop: "0.6rem" }}>
+    <div style={{ flex: 1 }}>
+      <div
+        style={{ fontWeight: 700, fontSize: "0.8rem", color: "var(--fa-dim)" }}
+      >
+        0s
+      </div>
+      <div style={{ fontSize: "0.75rem", color: "var(--fa-dim)" }}>
+        feels instant, like a light switch
+      </div>
+    </div>
+    <div
+      style={{
+        flex: 1.1,
+        borderLeft: "2px solid var(--fa-border)",
+        paddingLeft: "0.45rem",
+      }}
+    >
+      <div
+        style={{
+          fontWeight: 700,
+          fontSize: "0.8rem",
+          color: "var(--fa-accent)",
+        }}
+      >
+        0.1s
+      </div>
+      <div style={{ fontSize: "0.75rem", color: "var(--fa-dim)" }}>
+        you see it, you don't mind
+      </div>
+    </div>
+    <div
+      style={{
+        flex: 1.5,
+        borderLeft: "2px solid var(--fa-border)",
+        paddingLeft: "0.45rem",
+      }}
+    >
+      <div
+        style={{
+          fontWeight: 700,
+          fontSize: "0.8rem",
+          color: "var(--fa-bad-text)",
+        }}
+      >
+        1s
+      </div>
+      <div style={{ fontSize: "0.75rem", color: "var(--fa-dim)" }}>
+        now you're waiting, your mind drifts
+      </div>
+    </div>
+    <div
+      style={{
+        flex: 1.2,
+        borderLeft: "2px solid var(--fa-border)",
+        paddingLeft: "0.45rem",
+      }}
+    >
+      <div
+        style={{
+          fontWeight: 700,
+          fontSize: "0.8rem",
+          color: "var(--fa-bad-text)",
+        }}
+      >
+        10s
+      </div>
+      <div style={{ fontSize: "0.75rem", color: "var(--fa-dim)" }}>
+        you've opened another app
+      </div>
+    </div>
+  </div>
+</div>
+
+That's why making something fast can go completely unnoticed: a wait that shrinks but stays inside the same zone changes nothing in how it feels.
+
+## The same wait, in two different places
+
+<div
+  style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(13rem, 1fr))",
+    gap: "1.25rem",
+    margin: "1.5rem 0",
+  }}
+>
+  <div style={{ textAlign: "center" }}>
+    <div
+      style={{
+        background: "var(--fa-bg)",
+        border: "2px solid var(--fa-border)",
+        borderRadius: "22px",
+        padding: "0.9rem 0.85rem 1.1rem",
+        maxWidth: "13rem",
+        margin: "0 auto",
+        color: "var(--fa-text)",
+        textAlign: "left",
+      }}
+    >
+      <div
+        style={{
+          width: "3rem",
+          height: "0.3rem",
+          background: "var(--fa-border)",
+          borderRadius: "999px",
+          margin: "0 auto 1rem",
+        }}
+      />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          fontSize: "0.78rem",
+          color: "var(--fa-dim)",
+          marginBottom: "0.35rem",
+        }}
+      >
+        <span>Groceries</span>
+        <span>€34.90</span>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          fontSize: "0.78rem",
+          fontWeight: 700,
+          marginBottom: "0.85rem",
+        }}
+      >
+        <span>Total</span>
+        <span>€34.90</span>
+      </div>
+      <div
+        style={{
+          background: "var(--fa-pill-bg)",
+          color: "var(--fa-pill-text)",
+          borderRadius: "10px",
+          padding: "0.6rem",
+          fontWeight: 700,
+          fontSize: "0.9rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "0.5rem",
+        }}
+      >
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          style={{ stroke: "var(--fa-pill-text)" }}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        >
+          <path d="M21 12a9 9 0 1 1-6.2-8.56" />
+        </svg>
+        PAY
+      </div>
+      <div
+        style={{
+          marginTop: "0.7rem",
+          fontSize: "0.75rem",
+          fontWeight: 700,
+          color: "var(--fa-accent)",
+          textAlign: "center",
+        }}
+      >
+        ... 2 seconds
+      </div>
+    </div>
+    <div
+      style={{
+        marginTop: "0.7rem",
+        fontSize: "0.9rem",
+        fontWeight: 700,
+        color: "var(--fa-bad-text)",
+      }}
+    >
+      expensive
+    </div>
+    <div style={{ fontSize: "0.8rem", color: "var(--fa-dim)" }}>
+      it stands between you and the one thing you came to do
+    </div>
+  </div>
+  <div style={{ textAlign: "center" }}>
+    <div
+      style={{
+        background: "var(--fa-bg)",
+        border: "2px solid var(--fa-border)",
+        borderRadius: "22px",
+        padding: "0.9rem 0.85rem 1.1rem",
+        maxWidth: "13rem",
+        margin: "0 auto",
+        color: "var(--fa-text)",
+        textAlign: "left",
+      }}
+    >
+      <div
+        style={{
+          width: "3rem",
+          height: "0.3rem",
+          background: "var(--fa-border)",
+          borderRadius: "999px",
+          margin: "0 auto 1rem",
+        }}
+      />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "0.6rem",
+        }}
+      >
+        <span style={{ fontSize: "0.78rem", color: "var(--fa-dim)" }}>
+          Notifications
+        </span>
+        <div
+          style={{
+            width: "1.7rem",
+            height: "0.95rem",
+            borderRadius: "999px",
+            border: "1.5px solid var(--fa-border)",
+            position: "relative",
+          }}
+        >
+          <div
+            style={{
+              width: "0.6rem",
+              height: "0.6rem",
+              borderRadius: "50%",
+              background: "var(--fa-dim)",
+              position: "absolute",
+              top: "0.11rem",
+              right: "0.12rem",
+            }}
+          />
+        </div>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "0.6rem",
+        }}
+      >
+        <span style={{ fontSize: "0.78rem", color: "var(--fa-dim)" }}>
+          Language
+        </span>
+        <span style={{ fontSize: "0.78rem", color: "var(--fa-dim)" }}>
+          EN ›
+        </span>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "0.85rem",
+        }}
+      >
+        <span style={{ fontSize: "0.78rem", color: "var(--fa-dim)" }}>
+          Dark mode
+        </span>
+        <div
+          style={{
+            width: "1.7rem",
+            height: "0.95rem",
+            borderRadius: "999px",
+            border: "1.5px solid var(--fa-border)",
+            position: "relative",
+          }}
+        >
+          <div
+            style={{
+              width: "0.6rem",
+              height: "0.6rem",
+              borderRadius: "50%",
+              background: "var(--fa-dim)",
+              position: "absolute",
+              top: "0.11rem",
+              left: "0.12rem",
+            }}
+          />
+        </div>
+      </div>
+      <div
+        style={{
+          marginTop: "0.7rem",
+          fontSize: "0.75rem",
+          fontWeight: 700,
+          color: "var(--fa-accent)",
+          textAlign: "center",
+        }}
+      >
+        ... 2 seconds
+      </div>
+    </div>
+    <div
+      style={{
+        marginTop: "0.7rem",
+        fontSize: "0.9rem",
+        fontWeight: 700,
+        color: "var(--fa-dim)",
+      }}
+    >
+      a shrug
+    </div>
+    <div style={{ fontSize: "0.8rem", color: "var(--fa-dim)" }}>
+      you're here once a month, nobody's rushing
+    </div>
+  </div>
+</div>
+
+Identical delay, completely different cost. What makes a wait expensive is standing between someone and the thing they came for.
+
+## The same wait, for two different people
+
+<div
+  style={{
+    background: "var(--fa-bg)",
+    border: "1.5px solid var(--fa-border)",
+    borderRadius: "12px",
+    padding: "1.5rem",
+    margin: "1.5rem 0",
+    color: "var(--fa-text)",
+  }}
+>
+  <div
+    style={{
+      fontSize: "0.75rem",
+      textTransform: "uppercase",
+      letterSpacing: "0.08em",
+      color: "var(--fa-dim)",
+      fontWeight: 700,
+      marginBottom: "1.1rem",
+    }}
+  >
+    how much the same 2-second wait costs
+  </div>
+  <div
+    style={{
+      display: "flex",
+      alignItems: "flex-end",
+      gap: "1.25rem",
+      borderBottom: "1.5px solid var(--fa-border)",
+    }}
+  >
+    <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "4.5rem",
+          height: "26px",
+          background: "var(--fa-good-border)",
+          borderRadius: "6px 6px 0 0",
+        }}
+      />
+    </div>
+    <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "4.5rem",
+          height: "84px",
+          background: "var(--fa-accent)",
+          borderRadius: "6px 6px 0 0",
+        }}
+      />
+    </div>
+    <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "4.5rem",
+          height: "138px",
+          background: "var(--fa-bad-border)",
+          borderRadius: "6px 6px 0 0",
+        }}
+      />
+    </div>
+  </div>
+  <div style={{ display: "flex", gap: "1.25rem", marginTop: "0.6rem" }}>
+    <div
+      style={{
+        flex: 1,
+        textAlign: "center",
+        fontSize: "0.78rem",
+        color: "var(--fa-dim)",
+      }}
+    >
+      uses the app once a week
+    </div>
+    <div
+      style={{
+        flex: 1,
+        textAlign: "center",
+        fontSize: "0.78rem",
+        color: "var(--fa-dim)",
+      }}
+    >
+      uses it all day, for work
+    </div>
+    <div
+      style={{
+        flex: 1,
+        textAlign: "center",
+        fontSize: "0.78rem",
+        color: "var(--fa-dim)",
+      }}
+    >
+      waits in front of customers
+    </div>
+  </div>
+</div>
+
+A [2025 study](https://dl.acm.org/doi/10.1145/3706598.3713475) even measured people slowing down their own gestures after an app kept them waiting, as if bracing for the next delay. On a tool someone uses all day, a wait keeps costing after it's over.
+
+## A wait shrinks when you can watch the work
+
+Researchers ran an [experiment](https://pubsonline.informs.org/doi/10.1287/mnsc.1110.1376) with a travel search site: when the screen showed what was being searched ("checking airlines... comparing fares..."), people rated the site higher. Some preferred the slower version over an instant one, and trusted its results more.
+
+<div
+  style={{
+    background: "var(--fa-bg)",
+    border: "1.5px solid var(--fa-border)",
+    borderRadius: "12px",
+    padding: "1.5rem",
+    margin: "1.5rem 0",
+    color: "var(--fa-text)",
+    display: "flex",
+    flexDirection: "column",
+    gap: "1.4rem",
+  }}
+>
+  <div>
+    <div
+      style={{
+        fontSize: "0.75rem",
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
+        color: "var(--fa-bad-text)",
+        fontWeight: 700,
+        marginBottom: "0.7rem",
+      }}
+    >
+      frozen screen
+    </div>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "0.7rem",
+        marginBottom: "0.45rem",
+      }}
+    >
+      <span
+        style={{
+          fontSize: "0.78rem",
+          color: "var(--fa-dim)",
+          minWidth: "6.5rem",
+        }}
+      >
+        the clock says
+      </span>
+      <div style={{ flex: 1 }}>
+        <div
+          style={{
+            width: "38%",
+            height: "12px",
+            background: "var(--fa-dim)",
+            borderRadius: "999px",
+          }}
+        />
+      </div>
+      <span style={{ fontSize: "0.78rem", color: "var(--fa-dim)" }}>3s</span>
+    </div>
+    <div style={{ display: "flex", alignItems: "center", gap: "0.7rem" }}>
+      <span
+        style={{
+          fontSize: "0.78rem",
+          color: "var(--fa-dim)",
+          minWidth: "6.5rem",
+        }}
+      >
+        it feels like
+      </span>
+      <div style={{ flex: 1 }}>
+        <div
+          style={{
+            width: "72%",
+            height: "12px",
+            background: "var(--fa-bad-border)",
+            borderRadius: "999px",
+          }}
+        />
+      </div>
+      <span style={{ fontSize: "0.78rem", color: "var(--fa-bad-text)" }}>
+        is it broken?
+      </span>
+    </div>
+  </div>
+  <div>
+    <div
+      style={{
+        fontSize: "0.75rem",
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
+        color: "var(--fa-good-text)",
+        fontWeight: 700,
+        marginBottom: "0.7rem",
+      }}
+    >
+      "comparing 200 fares..."
+    </div>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "0.7rem",
+        marginBottom: "0.45rem",
+      }}
+    >
+      <span
+        style={{
+          fontSize: "0.78rem",
+          color: "var(--fa-dim)",
+          minWidth: "6.5rem",
+        }}
+      >
+        the clock says
+      </span>
+      <div style={{ flex: 1 }}>
+        <div
+          style={{
+            width: "38%",
+            height: "12px",
+            background: "var(--fa-dim)",
+            borderRadius: "999px",
+          }}
+        />
+      </div>
+      <span style={{ fontSize: "0.78rem", color: "var(--fa-dim)" }}>3s</span>
+    </div>
+    <div style={{ display: "flex", alignItems: "center", gap: "0.7rem" }}>
+      <span
+        style={{
+          fontSize: "0.78rem",
+          color: "var(--fa-dim)",
+          minWidth: "6.5rem",
+        }}
+      >
+        it feels like
+      </span>
+      <div style={{ flex: 1 }}>
+        <div
+          style={{
+            width: "24%",
+            height: "12px",
+            background: "var(--fa-good-border)",
+            borderRadius: "999px",
+          }}
+        />
+      </div>
+      <span style={{ fontSize: "0.78rem", color: "var(--fa-good-text)" }}>
+        it's working for me
+      </span>
+    </div>
+  </div>
+</div>
+
+It's the delivery app showing the courier moving on a map. The wait didn't change. The experience did.
+
+## But you can't animate everything away
+
+The trick only works when you'd wait anyway: the result is worth it, and nobody is timing you.
+
+<div
+  style={{
+    background: "var(--fa-bg)",
+    border: "1.5px solid var(--fa-border)",
+    borderRadius: "12px",
+    padding: "1.5rem",
+    margin: "1.5rem 0",
+    color: "var(--fa-text)",
+  }}
+>
+  <div style={{ textAlign: "center", marginBottom: "1.1rem" }}>
+    <div
+      style={{
+        background: "var(--fa-pill-bg)",
+        color: "var(--fa-pill-text)",
+        borderRadius: "8px",
+        padding: "0.5rem 0.9rem",
+        fontWeight: 700,
+        fontSize: "0.9rem",
+        display: "inline-block",
+      }}
+    >
+      a 3-second wait
+    </div>
+  </div>
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(13rem, 1fr))",
+      gap: "1.25rem",
+    }}
+  >
+    <div style={{ textAlign: "center" }}>
+      <div style={{ fontSize: "0.85rem", marginBottom: "0.5rem" }}>
+        worth it, and nobody's timing you?
+      </div>
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        style={{ stroke: "var(--fa-accent)", marginBottom: "0.5rem" }}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <line x1="12" y1="4" x2="12" y2="20" />
+        <polyline points="5 13 12 20 19 13" />
+      </svg>
+      <div
+        style={{
+          background: "var(--fa-good-bg)",
+          border: "1.5px solid var(--fa-good-border)",
+          color: "var(--fa-good-text)",
+          borderRadius: "8px",
+          padding: "0.5rem 0.9rem",
+          fontWeight: 700,
+          fontSize: "0.85rem",
+          display: "inline-block",
+        }}
+      >
+        show the work
+      </div>
+      <div
+        style={{
+          fontSize: "0.78rem",
+          color: "var(--fa-dim)",
+          marginTop: "0.45rem",
+        }}
+      >
+        trying on clothes virtually: a progress bar is honest
+      </div>
+    </div>
+    <div style={{ textAlign: "center" }}>
+      <div style={{ fontSize: "0.85rem", marginBottom: "0.5rem" }}>
+        someone is being timed?
+      </div>
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        style={{ stroke: "var(--fa-accent)", marginBottom: "0.5rem" }}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <line x1="12" y1="4" x2="12" y2="20" />
+        <polyline points="5 13 12 20 19 13" />
+      </svg>
+      <div
+        style={{
+          background: "var(--fa-bad-bg)",
+          border: "1.5px solid var(--fa-bad-border)",
+          color: "var(--fa-bad-text)",
+          borderRadius: "8px",
+          padding: "0.5rem 0.9rem",
+          fontWeight: 700,
+          fontSize: "0.85rem",
+          display: "inline-block",
+        }}
+      >
+        make it fast
+      </div>
+      <div
+        style={{
+          fontSize: "0.78rem",
+          color: "var(--fa-dim)",
+          marginTop: "0.45rem",
+        }}
+      >
+        taking orders during the dinner rush: no animation helps
+      </div>
+    </div>
+  </div>
+</div>
+
+The same slowness can call for two different repairs, and picking the right one starts with everything above: how long, where, for whom.
+
+## The point
+
+The same three seconds can be invisible in one app and fatal in another. Milliseconds are easy to measure; whether they matter is a question about people. That question is the one Lumorem is built to answer, and the technical version, with the research behind each piece, is in [Building Lumorem's impact score](/articles/building-lumorem-impact-score).
