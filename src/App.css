@@ -1177,6 +1177,55 @@ pre {
   background: transparent;
 }
 
+/* Perception gauge - used in explainer illustrations
+   (label + bar + value row, stacks vertically on narrow screens) */
+.perc-gauge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.perc-gauge-label {
+  font-size: 0.78rem;
+  min-width: 6.5rem;
+}
+
+.perc-gauge-bar-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.perc-gauge-value {
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 620px) {
+  .perc-gauge-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    column-gap: 0.6rem;
+    row-gap: 0.3rem;
+    align-items: center;
+  }
+  .perc-gauge-label {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    min-width: 0;
+    font-weight: 600;
+  }
+  .perc-gauge-bar-wrap {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .perc-gauge-value {
+    grid-column: 2;
+    grid-row: 2;
+    text-align: right;
+  }
+}
+
 .article-card-tag-fa {
   display: inline-block;
   padding: 3px 8px;

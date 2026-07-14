@@ -495,24 +495,11 @@ Researchers ran an [experiment](https://pubsonline.informs.org/doi/10.1287/mnsc.
     >
       frozen screen
     </div>
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "0.7rem",
-        marginBottom: "0.45rem",
-      }}
-    >
-      <span
-        style={{
-          fontSize: "0.78rem",
-          color: "var(--fa-dim)",
-          minWidth: "6.5rem",
-        }}
-      >
+    <div className="perc-gauge-row" style={{ marginBottom: "0.6rem" }}>
+      <span className="perc-gauge-label" style={{ color: "var(--fa-dim)" }}>
         the clock says
       </span>
-      <div style={{ flex: 1 }}>
+      <div className="perc-gauge-bar-wrap">
         <div
           style={{
             width: "38%",
@@ -522,19 +509,15 @@ Researchers ran an [experiment](https://pubsonline.informs.org/doi/10.1287/mnsc.
           }}
         />
       </div>
-      <span style={{ fontSize: "0.78rem", color: "var(--fa-dim)" }}>3s</span>
+      <span className="perc-gauge-value" style={{ color: "var(--fa-dim)" }}>
+        3s
+      </span>
     </div>
-    <div style={{ display: "flex", alignItems: "center", gap: "0.7rem" }}>
-      <span
-        style={{
-          fontSize: "0.78rem",
-          color: "var(--fa-dim)",
-          minWidth: "6.5rem",
-        }}
-      >
+    <div className="perc-gauge-row">
+      <span className="perc-gauge-label" style={{ color: "var(--fa-dim)" }}>
         it feels like
       </span>
-      <div style={{ flex: 1 }}>
+      <div className="perc-gauge-bar-wrap">
         <div
           style={{
             width: "72%",
@@ -544,7 +527,10 @@ Researchers ran an [experiment](https://pubsonline.informs.org/doi/10.1287/mnsc.
           }}
         />
       </div>
-      <span style={{ fontSize: "0.78rem", color: "var(--fa-bad-text)" }}>
+      <span
+        className="perc-gauge-value"
+        style={{ color: "var(--fa-bad-text)" }}
+      >
         is it broken?
       </span>
     </div>
@@ -562,24 +548,11 @@ Researchers ran an [experiment](https://pubsonline.informs.org/doi/10.1287/mnsc.
     >
       "comparing 200 fares..."
     </div>
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "0.7rem",
-        marginBottom: "0.45rem",
-      }}
-    >
-      <span
-        style={{
-          fontSize: "0.78rem",
-          color: "var(--fa-dim)",
-          minWidth: "6.5rem",
-        }}
-      >
+    <div className="perc-gauge-row" style={{ marginBottom: "0.6rem" }}>
+      <span className="perc-gauge-label" style={{ color: "var(--fa-dim)" }}>
         the clock says
       </span>
-      <div style={{ flex: 1 }}>
+      <div className="perc-gauge-bar-wrap">
         <div
           style={{
             width: "38%",
@@ -589,19 +562,15 @@ Researchers ran an [experiment](https://pubsonline.informs.org/doi/10.1287/mnsc.
           }}
         />
       </div>
-      <span style={{ fontSize: "0.78rem", color: "var(--fa-dim)" }}>3s</span>
+      <span className="perc-gauge-value" style={{ color: "var(--fa-dim)" }}>
+        3s
+      </span>
     </div>
-    <div style={{ display: "flex", alignItems: "center", gap: "0.7rem" }}>
-      <span
-        style={{
-          fontSize: "0.78rem",
-          color: "var(--fa-dim)",
-          minWidth: "6.5rem",
-        }}
-      >
+    <div className="perc-gauge-row">
+      <span className="perc-gauge-label" style={{ color: "var(--fa-dim)" }}>
         it feels like
       </span>
-      <div style={{ flex: 1 }}>
+      <div className="perc-gauge-bar-wrap">
         <div
           style={{
             width: "24%",
@@ -611,7 +580,10 @@ Researchers ran an [experiment](https://pubsonline.informs.org/doi/10.1287/mnsc.
           }}
         />
       </div>
-      <span style={{ fontSize: "0.78rem", color: "var(--fa-good-text)" }}>
+      <span
+        className="perc-gauge-value"
+        style={{ color: "var(--fa-good-text)" }}
+      >
         it's working for me
       </span>
     </div>
