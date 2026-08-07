@@ -1,0 +1,692 @@
+---
+title: "Same code, different score: from pinning the answer to voting on it"
+description: "Lumorem uses an LLM to judge performance findings. Pinning the first answer made audits reproducible, and hid the real question: how do I know the first answer is right? What the research says, and what I rebuilt."
+date: "2026-08-07"
+tags: ["llm", "reliability", "static-analysis", "research", "lumorem"]
+draft: false
+---
+
+[Lumorem](https://lumorem.com) audits a repo and returns performance findings ranked by user impact. The ranking is the product. So this, from two audits of the exact same commit, is a bug report against the whole idea:
+
+| Audit  | Finding                                 | Severity | Score |
+| ------ | --------------------------------------- | -------- | ----- |
+| July 1 | Sequential upserts in admin PATCH (N+1) | P1       | 1.3   |
+| July 4 | Sequential upserts in admin PATCH (N+1) | P2       | **0** |
+
+Same file, same code, same detector. The drift lived in one stage:
+
+<div
+  style={{
+    display: "flex",
+    alignItems: "stretch",
+    gap: "0.5rem",
+    margin: "1.5rem 0",
+    fontSize: "0.78rem",
+    color: "var(--term-text)",
+  }}
+>
+  <div
+    style={{
+      flex: 1,
+      border: "1px solid var(--term-border)",
+      borderRadius: "4px",
+      padding: "0.6rem 0.7rem",
+    }}
+  >
+    <div style={{ fontWeight: 700 }}>AST detectors</div>
+    <div style={{ color: "var(--term-text-dim)" }}>deterministic</div>
+  </div>
+  <div style={{ alignSelf: "center", color: "var(--term-text-dim)" }}>→</div>
+  <div
+    style={{
+      flex: 1.4,
+      border: "1px solid var(--term-prompt)",
+      borderRadius: "4px",
+      padding: "0.6rem 0.7rem",
+    }}
+  >
+    <div style={{ fontWeight: 700, color: "var(--term-prompt)" }}>
+      LLM review
+    </div>
+    <div style={{ color: "var(--term-text-dim)" }}>
+      judgment: confirm, context, magnitude
+    </div>
+  </div>
+  <div style={{ alignSelf: "center", color: "var(--term-text-dim)" }}>→</div>
+  <div
+    style={{
+      flex: 1,
+      border: "1px solid var(--term-border)",
+      borderRadius: "4px",
+      padding: "0.6rem 0.7rem",
+    }}
+  >
+    <div style={{ fontWeight: 700 }}>scoring</div>
+    <div style={{ color: "var(--term-text-dim)" }}>deterministic formula</div>
+  </div>
+</div>
+
+## First fix: record the opinion
+
+The LLM classifies how each file is used, an admin PATCH can reasonably be read two ways, and the two readings sit on different scoring thresholds:
+
+```
+July 1:  INPUT_RESPONSE  → 150ms > 100ms threshold  → P1, score 1.3
+July 4:  LONG_OPERATION  → 150ms < 1000ms threshold → P2, score 0
+```
+
+So I recorded the opinion: the first classification of a route is persisted and pinned, overridable from the UI, and every candidate must come out of review as a finding or an explicit rejection. Audits of unchanged code became reproducible.
+
+## Reproducible is not right
+
+Pinning the first classification means the product's opinion of a route is whatever the model said the first time it looked. If both July readings were reasonable, saving July 1 doesn't make it the good one. It makes it the lucky one.
+
+So before rebuilding anything, I went reading. First question: is there even a "true severity" to recover? For human experts, not as a point value:
+
+<div
+  style={{
+    display: "flex",
+    gap: "0.75rem",
+    margin: "1.5rem 0",
+    flexWrap: "wrap",
+  }}
+>
+  <div
+    style={{
+      flex: "1 1 200px",
+      border: "1px solid var(--term-border)",
+      borderRadius: "4px",
+      padding: "1rem",
+    }}
+  >
+    <div
+      style={{
+        fontSize: "2rem",
+        fontWeight: 800,
+        color: "var(--term-prompt)",
+      }}
+    >
+      51%
+    </div>
+    <div style={{ fontSize: "0.8rem", color: "var(--term-text)" }}>
+      of duplicate bug reports (same underlying problem, reported twice) carry
+      different human-assigned severities
+    </div>
+    <div
+      style={{
+        fontSize: "0.7rem",
+        color: "var(--term-text-dim)",
+        marginTop: "0.4rem",
+      }}
+    >
+      Tian, Ali, Lo, Hassan 2016
+    </div>
+  </div>
+  <div
+    style={{
+      flex: "1 1 200px",
+      border: "1px solid var(--term-border)",
+      borderRadius: "4px",
+      padding: "1rem",
+    }}
+  >
+    <div
+      style={{
+        fontSize: "2rem",
+        fontWeight: 800,
+        color: "var(--term-prompt)",
+      }}
+    >
+      68%
+    </div>
+    <div style={{ fontSize: "0.8rem", color: "var(--term-text)" }}>
+      of trained CVSS raters disagree with their own earlier score when
+      re-rating the same vulnerability
+    </div>
+    <div
+      style={{
+        fontSize: "0.7rem",
+        color: "var(--term-text-dim)",
+        marginTop: "0.4rem",
+      }}
+    >
+      Wunder et al. 2024
+    </div>
+  </div>
+</div>
+
+Second question: why does the model answer differently on byte-identical input, even at temperature 0?
+
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "0.75rem",
+    margin: "1.5rem 0",
+    border: "1px solid var(--term-border)",
+    borderRadius: "4px",
+    padding: "1rem",
+  }}
+>
+  <div style={{ flex: 1, textAlign: "center" }}>
+    <div
+      style={{
+        fontSize: "1.6rem",
+        fontWeight: 800,
+        color: "var(--term-text)",
+      }}
+    >
+      1,000
+    </div>
+    <div style={{ fontSize: "0.75rem", color: "var(--term-text-dim)" }}>
+      identical prompts
+    </div>
+  </div>
+  <div style={{ color: "var(--term-text-dim)" }}>→</div>
+  <div
+    style={{
+      flex: 1.2,
+      textAlign: "center",
+      border: "1px dashed var(--term-border)",
+      borderRadius: "4px",
+      padding: "0.5rem",
+    }}
+  >
+    <div
+      style={{
+        fontSize: "0.8rem",
+        fontWeight: 700,
+        color: "var(--term-text)",
+      }}
+    >
+      temperature 0
+    </div>
+    <div style={{ fontSize: "0.7rem", color: "var(--term-text-dim)" }}>
+      co-batched on the GPU with other users' traffic
+    </div>
+  </div>
+  <div style={{ color: "var(--term-text-dim)" }}>→</div>
+  <div style={{ flex: 1, textAlign: "center" }}>
+    <div
+      style={{
+        fontSize: "1.6rem",
+        fontWeight: 800,
+        color: "var(--term-prompt)",
+      }}
+    >
+      80
+    </div>
+    <div style={{ fontSize: "0.75rem", color: "var(--term-text-dim)" }}>
+      unique completions
+    </div>
+    <div style={{ fontSize: "0.7rem", color: "var(--term-text-dim)" }}>
+      Thinking Machines 2025
+    </div>
+  </div>
+</div>
+
+A single LLM call is one draw from a distribution, and no API parameter collapses the distribution. The old design drew one sample and archived it.
+
+## Decide by majority, explain once
+
+The rebuilt review splits judging from writing:
+
+<div
+  style={{
+    border: "1px solid var(--term-border)",
+    borderRadius: "4px",
+    padding: "0.9rem 1rem",
+    margin: "1.5rem 0 0.75rem",
+    fontSize: "0.78rem",
+    color: "var(--term-text)",
+  }}
+>
+  <div
+    style={{
+      fontWeight: 700,
+      fontSize: "0.7rem",
+      letterSpacing: "0.08em",
+      color: "var(--term-prompt)",
+      marginBottom: "0.6rem",
+    }}
+  >
+    STAGE A · DECIDE
+  </div>
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: "0.5rem",
+      flexWrap: "wrap",
+    }}
+  >
+    <div
+      style={{
+        border: "1px solid var(--term-border)",
+        borderRadius: "4px",
+        padding: "0.45rem 0.6rem",
+      }}
+    >
+      batch of candidates
+    </div>
+    <div style={{ color: "var(--term-text-dim)" }}>→</div>
+    <div style={{ display: "flex", gap: "0.3rem" }}>
+      <div
+        style={{
+          border: "1px solid var(--term-border)",
+          borderRadius: "4px",
+          padding: "0.45rem 0.55rem",
+          fontWeight: 700,
+        }}
+      >
+        vote 1
+      </div>
+      <div
+        style={{
+          border: "1px solid var(--term-border)",
+          borderRadius: "4px",
+          padding: "0.45rem 0.55rem",
+          fontWeight: 700,
+        }}
+      >
+        vote 2
+      </div>
+      <div
+        style={{
+          border: "1px solid var(--term-border)",
+          borderRadius: "4px",
+          padding: "0.45rem 0.55rem",
+          fontWeight: 700,
+        }}
+      >
+        vote 3
+      </div>
+    </div>
+    <div style={{ color: "var(--term-text-dim)" }}>→</div>
+    <div
+      style={{
+        border: "1px solid var(--term-border)",
+        borderRadius: "4px",
+        padding: "0.45rem 0.6rem",
+      }}
+    >
+      majority per field
+    </div>
+    <div style={{ color: "var(--term-text-dim)" }}>→</div>
+    <div
+      style={{
+        border: "1px dashed var(--term-border)",
+        borderRadius: "4px",
+        padding: "0.45rem 0.6rem",
+        color: "var(--term-text-dim)",
+      }}
+    >
+      2/1 split? +2 votes, majority of 5
+    </div>
+  </div>
+  <div style={{ color: "var(--term-text-dim)", marginTop: "0.6rem" }}>
+    Only compact categorical fields come back: confirmed, degradation bucket,
+    recommendation. Last audit: 3 batches of 24 escalated.
+  </div>
+</div>
+
+<div
+  style={{
+    border: "1px solid var(--term-border)",
+    borderRadius: "4px",
+    padding: "0.9rem 1rem",
+    margin: "0 0 1.5rem",
+    fontSize: "0.78rem",
+    color: "var(--term-text)",
+  }}
+>
+  <div
+    style={{
+      fontWeight: 700,
+      fontSize: "0.7rem",
+      letterSpacing: "0.08em",
+      color: "var(--term-prompt)",
+      marginBottom: "0.6rem",
+    }}
+  >
+    STAGE B · EXPLAIN
+  </div>
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: "0.5rem",
+      flexWrap: "wrap",
+    }}
+  >
+    <div
+      style={{
+        border: "1px solid var(--term-border)",
+        borderRadius: "4px",
+        padding: "0.45rem 0.6rem",
+      }}
+    >
+      confirmed candidates only
+    </div>
+    <div style={{ color: "var(--term-text-dim)" }}>→</div>
+    <div
+      style={{
+        border: "1px solid var(--term-border)",
+        borderRadius: "4px",
+        padding: "0.45rem 0.6rem",
+      }}
+    >
+      one call per file: title, remediation, rationale
+    </div>
+  </div>
+  <div style={{ color: "var(--term-text-dim)", marginTop: "0.6rem" }}>
+    Stage A decisions are passed in as final. The prose writer cannot
+    re-litigate the verdict it is explaining.
+  </div>
+</div>
+
+Two design choices came straight from the reading.
+
+**Buckets replaced free milliseconds.** The model used to output `degradation_ms: 150` and the same N+1 straddled a tier boundary run to run. Categorical outputs are the most stable format an LLM judge produces and free numbers the least, so the model now picks a bucket anchored to the thresholds the score already uses. For a click:
+
+<div style={{ margin: "1.5rem 0", color: "var(--term-text)" }}>
+  <div style={{ display: "flex", height: "10px", gap: "2px" }}>
+    <div
+      style={{ flex: 1, background: "var(--term-text-dim)", opacity: 0.2 }}
+    />
+    <div
+      style={{ flex: 1, background: "var(--term-text-dim)", opacity: 0.35 }}
+    />
+    <div
+      style={{ flex: 1, background: "var(--term-text-dim)", opacity: 0.55 }}
+    />
+    <div
+      style={{ flex: 1, background: "var(--term-text-dim)", opacity: 0.75 }}
+    />
+    <div style={{ flex: 1, background: "var(--term-text-dim)" }} />
+  </div>
+  <div style={{ display: "flex", marginTop: "0.5rem", gap: "2px" }}>
+    <div style={{ flex: 1, paddingRight: "0.3rem" }}>
+      <div
+        style={{
+          fontSize: "0.62rem",
+          fontWeight: 700,
+          color: "var(--term-text-dim)",
+        }}
+      >
+        IMPERCEPTIBLE
+      </div>
+      <div style={{ fontSize: "0.68rem", color: "var(--term-text-dim)" }}>
+        0-50ms
+      </div>
+      <div style={{ fontSize: "0.75rem", fontWeight: 700 }}>→ 25ms</div>
+    </div>
+    <div style={{ flex: 1, paddingRight: "0.3rem" }}>
+      <div
+        style={{
+          fontSize: "0.62rem",
+          fontWeight: 700,
+          color: "var(--term-text-dim)",
+        }}
+      >
+        WITHIN_TOLERANCE
+      </div>
+      <div style={{ fontSize: "0.68rem", color: "var(--term-text-dim)" }}>
+        50-100ms
+      </div>
+      <div style={{ fontSize: "0.75rem", fontWeight: 700 }}>→ 71ms</div>
+    </div>
+    <div style={{ flex: 1, paddingRight: "0.3rem" }}>
+      <div
+        style={{
+          fontSize: "0.62rem",
+          fontWeight: 700,
+          color: "var(--term-text-dim)",
+        }}
+      >
+        NOTICEABLE
+      </div>
+      <div style={{ fontSize: "0.68rem", color: "var(--term-text-dim)" }}>
+        100-200ms
+      </div>
+      <div style={{ fontSize: "0.75rem", fontWeight: 700 }}>→ 141ms</div>
+    </div>
+    <div style={{ flex: 1, paddingRight: "0.3rem" }}>
+      <div
+        style={{
+          fontSize: "0.62rem",
+          fontWeight: 700,
+          color: "var(--term-text-dim)",
+        }}
+      >
+        DEGRADED
+      </div>
+      <div style={{ fontSize: "0.68rem", color: "var(--term-text-dim)" }}>
+        200-500ms
+      </div>
+      <div style={{ fontSize: "0.75rem", fontWeight: 700 }}>→ 316ms</div>
+    </div>
+    <div style={{ flex: 1 }}>
+      <div
+        style={{
+          fontSize: "0.62rem",
+          fontWeight: 700,
+          color: "var(--term-text-dim)",
+        }}
+      >
+        SEVERE
+      </div>
+      <div style={{ fontSize: "0.68rem", color: "var(--term-text-dim)" }}>
+        500ms+
+      </div>
+      <div style={{ fontSize: "0.75rem", fontWeight: 700 }}>→ 1000ms</div>
+    </div>
+  </div>
+  <div
+    style={{
+      fontSize: "0.72rem",
+      color: "var(--term-text-dim)",
+      marginTop: "0.5rem",
+    }}
+  >
+    Lighthouse findings skip the bucket entirely and carry the measured value.
+  </div>
+</div>
+
+**Confidence stopped being a field the model fills in.** Verbalized confidence is systematically overconfident (Xiong et al.); agreement across samples is the signal that tracks reliability (Farquhar et al., in Nature). So confidence is computed from the tally and rendered as dots next to each finding:
+
+<div
+  style={{
+    display: "flex",
+    gap: "0.75rem",
+    margin: "1.5rem 0",
+    flexWrap: "wrap",
+    color: "var(--term-text)",
+  }}
+>
+  <div
+    style={{
+      flex: "1 1 140px",
+      border: "1px solid var(--term-border)",
+      borderRadius: "4px",
+      padding: "0.8rem",
+      textAlign: "center",
+    }}
+  >
+    <div style={{ fontSize: "1rem", letterSpacing: "0.15em" }}>●●●</div>
+    <div style={{ fontSize: "0.8rem", fontWeight: 700 }}>3/3 · high</div>
+    <div style={{ fontSize: "0.7rem", color: "var(--term-text-dim)" }}>
+      unanimous
+    </div>
+  </div>
+  <div
+    style={{
+      flex: "1 1 140px",
+      border: "1px solid var(--term-border)",
+      borderRadius: "4px",
+      padding: "0.8rem",
+      textAlign: "center",
+    }}
+  >
+    <div style={{ fontSize: "1rem", letterSpacing: "0.15em" }}>
+      ●●●●<span style={{ color: "var(--term-text-dim)" }}>○</span>
+    </div>
+    <div style={{ fontSize: "0.8rem", fontWeight: 700 }}>4/5 · medium</div>
+    <div style={{ fontSize: "0.7rem", color: "var(--term-text-dim)" }}>
+      settled on escalation
+    </div>
+  </div>
+  <div
+    style={{
+      flex: "1 1 140px",
+      border: "1px solid var(--term-border)",
+      borderRadius: "4px",
+      padding: "0.8rem",
+      textAlign: "center",
+    }}
+  >
+    <div style={{ fontSize: "1rem", letterSpacing: "0.15em" }}>
+      ●●<span style={{ color: "var(--term-text-dim)" }}>○○○</span>
+    </div>
+    <div style={{ fontSize: "0.8rem", fontWeight: 700 }}>3/5 · low</div>
+    <div style={{ fontSize: "0.7rem", color: "var(--term-text-dim)" }}>
+      the ensemble is not sure, in public
+    </div>
+  </div>
+</div>
+
+## What five opinions cost
+
+Triple the calls should triple the bill. It doesn't, because votes 2 and 3 are byte-identical to vote 1, and a cached read is billed at a tenth of the input price. The request is assembled in cache-stable blocks:
+
+<div
+  style={{
+    border: "1px solid var(--term-border)",
+    borderRadius: "4px",
+    padding: "1rem",
+    margin: "1.5rem 0",
+    fontSize: "0.78rem",
+    color: "var(--term-text)",
+  }}
+>
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: "0.25rem",
+      flexWrap: "wrap",
+    }}
+  >
+    <div
+      style={{
+        border: "1px solid var(--term-border)",
+        borderRadius: "4px",
+        padding: "0.4rem 0.6rem",
+      }}
+    >
+      system prompt
+    </div>
+    <div style={{ color: "var(--term-text-dim)" }}>✂</div>
+    <div
+      style={{
+        border: "1px solid var(--term-border)",
+        borderRadius: "4px",
+        padding: "0.4rem 0.6rem",
+      }}
+    >
+      business context
+    </div>
+    <div style={{ color: "var(--term-text-dim)" }}>✂</div>
+    <div
+      style={{
+        border: "1px solid var(--term-border)",
+        borderRadius: "4px",
+        padding: "0.4rem 0.6rem",
+      }}
+    >
+      file content
+    </div>
+    <div style={{ color: "var(--term-text-dim)" }}>✂</div>
+    <div
+      style={{
+        border: "1px solid var(--term-border)",
+        borderRadius: "4px",
+        padding: "0.4rem 0.6rem",
+      }}
+    >
+      decision task
+    </div>
+    <div style={{ color: "var(--term-text-dim)" }}>✂</div>
+  </div>
+  <div style={{ marginTop: "0.75rem" }}>
+    <span style={{ fontWeight: 700, color: "var(--term-prompt)" }}>vote 1</span>{" "}
+    runs alone and writes the prefix to cache: 105,689 tokens across one audit's
+    24 batches.
+  </div>
+  <div style={{ marginTop: "0.3rem" }}>
+    <span style={{ fontWeight: 700, color: "var(--term-prompt)" }}>
+      votes 2 and 3
+    </span>{" "}
+    fire in parallel and read it back: 3 uncached input tokens per call against
+    roughly 6,200 cached.
+  </div>
+</div>
+
+<div
+  style={{
+    display: "flex",
+    gap: "0.75rem",
+    margin: "1.5rem 0",
+    flexWrap: "wrap",
+    textAlign: "center",
+    color: "var(--term-text)",
+  }}
+>
+  <div style={{ flex: "1 1 120px" }}>
+    <div style={{ fontSize: "1.5rem", fontWeight: 800 }}>3 to 5</div>
+    <div style={{ fontSize: "0.72rem", color: "var(--term-text-dim)" }}>
+      independent opinions per verdict
+    </div>
+  </div>
+  <div style={{ flex: "1 1 120px" }}>
+    <div style={{ fontSize: "1.5rem", fontWeight: 800 }}>74.8%</div>
+    <div style={{ fontSize: "0.72rem", color: "var(--term-text-dim)" }}>
+      of input tokens served from cache
+    </div>
+  </div>
+  <div style={{ flex: "1 1 120px" }}>
+    <div style={{ fontSize: "1.5rem", fontWeight: 800 }}>~1.5x</div>
+    <div style={{ fontSize: "0.72rem", color: "var(--term-text-dim)" }}>
+      the single-call design's cost, not 3x
+    </div>
+  </div>
+</div>
+
+## Receipts
+
+Two full audits of the same codebase, one day apart:
+
+|                        | July 25             | July 26          |
+| ---------------------- | ------------------- | ---------------- |
+| Findings               | 8                   | the same 8       |
+| Unanimous (3/3)        | 7                   | 7                |
+| Split (3/5, low)       | 1: context provider | the same finding |
+| Batches escalated to 5 | 2 of 24             | 3 of 24          |
+
+The split finding is the interesting row: a React context provider recreating its value object, a real pattern with an unmeasurable cost. The ensemble is consistently unsure about it, and says so both times. One borderline finding still moved across runs: the admin upserts crossed a bucket edge and went P2 in one audit, P1 in the other. The dots carry the warning; the edge is still an edge. Wunder's raters disagreed with themselves 68% of the time, so "same severity on every run, guaranteed" is not a bar humans clear either. What I can ship is bounded, measured uncertainty.
+
+## What I read
+
+| Source                                     | What it showed                                                                    |
+| ------------------------------------------ | --------------------------------------------------------------------------------- |
+| Tian, Ali, Lo, Hassan 2016 (EMSE)          | 51% of duplicate bug pairs carry different human-assigned severities              |
+| Wunder et al. 2024 (IEEE S&P)              | 68% of CVSS users disagree with their own earlier score on the same vuln          |
+| Thinking Machines 2025                     | 1,000 identical temperature-0 prompts produced 80 unique completions              |
+| Haldar & Hockenmaier 2025 (EMNLP Findings) | Categorical outputs are an LLM judge's most stable format, free numbers its least |
+| Wang et al. 2023 (ICLR)                    | Self-consistency: majority vote over k samples; most of the gain by k=3-5         |
+| Farquhar et al. 2024 (Nature)              | Agreement across ~5 samples as an uncertainty signal                              |
+| Xiong et al. 2024 (ICLR)                   | Verbalized confidence fields are systematically overconfident                     |
+
+## The shared move
+
+Pinning the first answer turned one opinion into permanent state. Voting turns the spread of opinions into the state: the verdict is the majority, and the disagreement itself becomes the confidence the user sees. The model still judges. It just doesn't get to judge alone anymore, and when the judges split, the user sees the split.
